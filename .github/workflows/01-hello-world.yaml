@@ -1,0 +1,10 @@
+name: Hello World
+on:
+  push:
+    branches:
+      - main
+jobs:
+  my-job-name:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo "👋 Hello from a GitHub Action Workflow!"
