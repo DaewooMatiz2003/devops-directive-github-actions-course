@@ -5,7 +5,14 @@ on:
   #     - main
   workflow_dispatch:
 jobs:
-  say-hello:
+  say-hello-inline:
     runs-on: ubuntu-24.04
     steps:
-      - run: echo "👋 Hello from a GitHub Action Workflow!"
+      - run: echo "👋 Hello from an inline bash script in a GitHub Action Workflow!"
+
+  say-hello-action:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: gr2m/hello-world-js-action@597729a1f68eeea20182bf483e713dac43601156 # 1.1.1
+        with:
+          greeting: "from an action in the github action marketplace"
