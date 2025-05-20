@@ -7,9 +7,13 @@ jobs:
   matrix-job:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: true
       matrix:
         number: [1, 2]
         letter: [a, b, c]
+        exclude:
+          - number: 1
+            letter: c
 
     steps:
       # Step 1 – always runs: show the current combination

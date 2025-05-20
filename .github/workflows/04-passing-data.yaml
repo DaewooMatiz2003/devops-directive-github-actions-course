@@ -2,16 +2,10 @@ name: Environment Vars and Data Passing
 on:
   workflow_dispatch:
 
-# ──────────────────────────────────────────
-# Global workflow-level environment variable
-# ──────────────────────────────────────────
 env:
   GLOBAL: THIS_IS_GLOBAL_SCOPED
 
 jobs:
-  # ╔═══════════════════════════════════════╗
-  # ║ JOB 1 – create & publish the value    ║
-  # ╚═══════════════════════════════════════╝
   job-1:
     runs-on: ubuntu-24.04
     env:
@@ -19,10 +13,9 @@ jobs:
 
     # Make foo available to other jobs
     outputs:
-      job-1-output: ${{ steps.generate-foo.outputs.foo }}
+      foo: ${{ steps.generate-foo.outputs.foo }}
 
     steps:
-      # STEP 1 ─────────────────────────────
       - name: Generate and export foo
         id: generate-foo
         run: |
@@ -34,7 +27,6 @@ jobs:
           # 2) Job-scoped environment variable
           echo "FOO=${foo}" >> "$GITHUB_ENV"
 
-      # STEP 2 ─────────────────────────────
       - name: Inspect values inside job-1
         run: |
           echo "GLOBAL (workflow-level):    $GLOBAL"
@@ -42,9 +34,6 @@ jobs:
           echo "FOO (set via GITHUB_ENV):   $FOO"
           echo "foo (step output):          ${{ steps.generate-foo.outputs.foo }}"
 
-  # ╔═══════════════════════════════════════╗
-  # ║ JOB 2 – consume job-1’s output        ║
-  # ╚═══════════════════════════════════════╝
   job-2:
     runs-on: ubuntu-24.04
     needs: job-1
@@ -56,5 +45,5 @@ jobs:
         run: |
           echo "GLOBAL (workflow-level): $GLOBAL"
           echo "JOB_2 (job-level):      $JOB_2"
-          echo "Value from job-1:       ${{ needs.job-1.outputs.job-1-output }}"
+          echo "Value from job-1:       ${{ needs.job-1.outputs.foo }}"
           echo "FOO in job-2:           ${FOO:-<UNSET>}"

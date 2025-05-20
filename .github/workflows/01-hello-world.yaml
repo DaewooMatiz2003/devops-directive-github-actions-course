@@ -5,7 +5,7 @@ on:
   #     - main
   workflow_dispatch:
 jobs:
-  my-job-name:
+  say-hello:
     runs-on: ubuntu-24.04
     steps:
       - run: echo "👋 Hello from a GitHub Action Workflow!"
