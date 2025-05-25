@@ -2,14 +2,14 @@ name: Permissions
 on:
   workflow_dispatch:
 
-permissions: 
+permissions:
   id-token: write # This is required for requesting the JWT
 
 jobs:
   auth-to-aws:
     runs-on: ubuntu-24.04
     steps:
-      - name: "Configure AWS Credentials" Action for GitHub Actions
+      - name: "Configure AWS Credentials - Action for GitHub Actions"
         uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df # v4.2.1
         with:
           role-to-assume: arn:aws:iam::917774925227:role/github-actions-role
