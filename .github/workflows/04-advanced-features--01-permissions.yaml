@@ -1,6 +1,37 @@
 name: Permissions
 on:
   workflow_dispatch:
+
+# Permissions can be defined at the workflow or job level
+# https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token
+################
+# Full Set
+################
+# permissions:
+#   actions: read|write|none
+#   attestations: read|write|none
+#   checks: read|write|none
+#   contents: read|write|none
+#   deployments: read|write|none
+#   id-token: write|none
+#   issues: read|write|none
+#   models: read|none
+#   discussions: read|write|none
+#   packages: read|write|none
+#   pages: read|write|none
+#   pull-requests: read|write|none
+#   security-events: read|write|none
+#   statuses: read|write|none
+################
+
+################
+# Default (everything unspecified is "none")
+################
+# permissions:
+#   contents: read
+#   packages: read
+################
+
 jobs:
   auth-to-aws:
     runs-on: ubuntu-24.04
