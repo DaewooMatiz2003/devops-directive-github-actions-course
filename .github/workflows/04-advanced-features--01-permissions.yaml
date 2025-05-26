@@ -1,16 +1,58 @@
 name: Permissions
 on:
   workflow_dispatch:
-
-permissions:
-  id-token: write # This is required for requesting the JWT
-
 jobs:
   auth-to-aws:
     runs-on: ubuntu-24.04
+    permissions:
+      id-token: write # This is required for requesting the JWT for OIDC auth to AWS
     steps:
       - name: "Configure AWS Credentials - Action for GitHub Actions"
         uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df # v4.2.1
         with:
           aws-region: us-east-2
           role-to-assume: arn:aws:iam::917774925227:role/github-actions-role
+
+  read-only-pr:
+    runs-on: ubuntu-24.04
+    permissions:
+      pull-requests: read # Can read PR data only
+    continue-on-error: true # Avoids failing entire workflow
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y gh
+
+      - name: List the first 5 open PRs (allowed)
+        run: gh pr list --limit 5
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Attempt to add a label (expected to fail)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr edit 1 --add-label "read-only-pr-job-label"
+
+      - name: Confirm the failure
+        if: failure()
+        run: echo "✅  Write operation was blocked as expected – token is read-only."
+
+  read-write-pr:
+    runs-on: ubuntu-24.04
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y gh
+
+      - name: Attempt to add a label (expected to fail)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr edit 1 --add-label "read-write-pr-job-label"
