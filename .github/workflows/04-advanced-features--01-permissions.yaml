@@ -35,7 +35,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh pr edit 1 --add-label "read-only-pr-job-label"
+          gh pr edit 1 --add-label "bug"
 
       - name: Confirm the failure
         if: failure()
@@ -57,4 +57,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh pr edit 1 --add-label "read-write-pr-job-label"
+          gh pr edit 1 --add-label "bug"
