@@ -3,6 +3,10 @@ name: Matrix and Conditionals
 on:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   matrix-job:
     runs-on: ubuntu-24.04
@@ -26,3 +30,9 @@ jobs:
       - name: Run everywhere except 2c
         if: ${{ ! (matrix.number == 2 && matrix.letter == 'c') }}
         run: echo "✔ This step runs for ${{ matrix.number }}${{ matrix.letter }}"
+
+  sleep-job:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Sleep (to give time to be cancelled)
+        run: sleep 100
