@@ -41,3 +41,6 @@ jobs:
           echo "Hello from ${{ runner.os }}-${{ runner.arch }}"
           echo "Runner name (type): ${{ runner.name }}"
           echo "Container image:   $(grep PRETTY_NAME /etc/os-release)"
+
+  # TODO: Add self-hosted (runs-on/k8s/actuated/railway)
+  # TODO: Add 3rd party runners (Depot/BuildJet/namespace/Ubicloud/WarpBuild)
