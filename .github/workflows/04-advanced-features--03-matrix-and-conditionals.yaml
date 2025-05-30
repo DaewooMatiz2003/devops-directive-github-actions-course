@@ -20,7 +20,7 @@ jobs:
             letter: c
 
     steps:
-      # Step 1 – always runs: show the current combination
+      # Step 1 – always runs
       - name: Echo number and letter
         run: |
           echo "Number: ${{ matrix.number }}"
