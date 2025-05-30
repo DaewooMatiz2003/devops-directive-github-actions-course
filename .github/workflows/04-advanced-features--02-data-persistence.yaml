@@ -90,20 +90,19 @@ jobs:
   node-cache:
     name: npm dependency cache (setup-node)
     runs-on: ubuntu-24.04
-    steps:
-      - name: Bootstrap tiny Node project
-        run: |
-          npm init -y
-          npm pkg set "dependencies.left-pad"=1.3.0
+    defaults:
+      run:
+        working-directory: 04-advanced-features/caching/minimal-node-project
 
-      - name: Install Node and enable npm cache
-        uses: actions/setup-node@v4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm # setup-node handles save/restore for you
-
-      - name: Install deps (populates or reuses cache)
+          cache: npm
+          # Point cache action at the specific lock-file path
+          cache-dependency-path: 04-advanced-features/caching/minimal-node-project/package-lock.json
+      - name: Install dependencies
         run: npm ci --prefer-offline --no-audit
-
-      - name: Show node_modules head
+      - name: List first few modules
         run: ls -R node_modules | head
