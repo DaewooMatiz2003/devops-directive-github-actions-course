@@ -86,7 +86,7 @@ jobs:
           echo "Env secret (masked):     $EXAMPLE_ENVIRONMENT_SECRET"
           echo "Env variable:            $EXAMPLE_ENVIRONMENT_VARIABLE"
 
-  job-artifact:
+  job-artifact-producer:
     runs-on: ubuntu-24.04
     steps:
       - name: Create artifact file
@@ -99,3 +99,16 @@ jobs:
         with:
           name: example-artifact
           path: artifact.txt
+
+  job-artifact-consumer:
+    runs-on: ubuntu-24.04
+    needs: job-artifact-producer
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: example-artifact
+
+      - name: Cat artifact file
+        run: |
+          cat artifact.txt
