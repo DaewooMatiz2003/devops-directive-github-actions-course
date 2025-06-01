@@ -6,7 +6,7 @@ jobs:
   # ──────────────────────────────────────────────
   # 1) Artifact round-trip
   # ──────────────────────────────────────────────
-  job-artifact-producer:
+  artifact-producer:
     name: Produce artifact
     runs-on: ubuntu-24.04
     steps:
@@ -21,7 +21,7 @@ jobs:
           name: example-artifact
           path: artifact.txt
 
-  job-artifact-consumer:
+  artifact-consumer:
     name: Consume artifact
     runs-on: ubuntu-24.04
     needs: job-artifact-producer
@@ -37,7 +37,7 @@ jobs:
   # ──────────────────────────────────────────────
   # 2) Generic cache with actions/cache
   # ──────────────────────────────────────────────
-  prime-cache:
+  actions-cache:
     name: Prime demo cache
     runs-on: ubuntu-24.04
     steps:
@@ -62,18 +62,6 @@ jobs:
       # Save cache only if we generated new content
       - name: Save cache
         if: steps.demo-cache.outputs.cache-hit != 'true'
-        uses: actions/cache@v4
-        with:
-          path: demo-cache
-          key: demo-cache-v1
-
-  use-cache:
-    name: Use demo cache
-    needs: prime-cache
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Restore cache
-        id: demo-cache
         uses: actions/cache@v4
         with:
           path: demo-cache

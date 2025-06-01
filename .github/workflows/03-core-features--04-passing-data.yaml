@@ -48,7 +48,7 @@ jobs:
           echo "Value from job-1:        ${{ needs.job-1.outputs.foo }}"
           echo "FOO in job-2:            ${FOO:-<UNSET>}"
 
-  job-staging:
+  staging-environment:
     runs-on: ubuntu-24.04
     environment: staging
     env:
@@ -67,7 +67,7 @@ jobs:
           echo "Env secret (masked):     $EXAMPLE_ENVIRONMENT_SECRET"
           echo "Env variable:            $EXAMPLE_ENVIRONMENT_VARIABLE"
 
-  job-production:
+  production-environment:
     runs-on: ubuntu-24.04
     environment: production
     env:
