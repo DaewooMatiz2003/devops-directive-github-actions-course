@@ -1,4 +1,4 @@
-name: Hello World
+name: Composite Action Demo
 
 on:
   workflow_dispatch:
