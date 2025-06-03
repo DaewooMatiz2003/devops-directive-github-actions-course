@@ -9,8 +9,7 @@ jobs:
     uses: ./.github/workflows/06-authoring-actions--02-reuseable-workflows-source.yaml
     with:
       foo: bar
-    secrets:
-      EXAMPLE_REPOSITORY_SECRET: ${{ secrets.EXAMPLE_REPOSITORY_SECRET }}
+    secrets: inherit
 
   call-reuseable-workflow-sha:
     name: Invoke reuseable workflow with repo + commit hash
