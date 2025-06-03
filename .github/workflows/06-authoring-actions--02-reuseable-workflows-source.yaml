@@ -9,6 +9,7 @@ on:
     secrets:
       EXAMPLE_REPOSITORY_SECRET: # Must be defined at repo or org level
         required: true
+
 jobs:
   reusable_workflow_job:
     runs-on: ubuntu-24.04
