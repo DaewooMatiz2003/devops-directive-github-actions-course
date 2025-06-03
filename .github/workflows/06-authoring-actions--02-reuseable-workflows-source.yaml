@@ -1,0 +1,20 @@
+on:
+  workflow_call:
+    inputs:
+      foo:
+        required: true
+        type: string
+    secrets:
+      EXAMPLE_REPOSITORY_SECRET: # Must be defined at repo or org level
+        required: true
+jobs:
+  reusable_workflow_job:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: job in reuseable workflow
+        env:
+          EXAMPLE_REPOSITORY_SECRET: ${{ secrets.EXAMPLE_REPOSITORY_SECRET }}
+          FOO: ${{ inputs.foo }}
+        run: |
+          echo "FOO                       = ${FOO}"
+          echo "EXAMPLE_REPOSITORY_SECRET = ${EXAMPLE_REPOSITORY_SECRET}"
