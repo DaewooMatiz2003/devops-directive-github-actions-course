@@ -5,10 +5,8 @@ on:
 
 jobs:
   call-reuseable-workflow:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/workflows/06-authoring-actions--02-reuseable-workflows-source.yaml
-        with:
-          foo: bar
-          EXAMPLE_REPOSITORY_SECRET: ${{ secrets.EXAMPLE_REPOSITORY_SECRET }}
+    uses: ./.github/workflows/06-authoring-actions--02-reuseable-workflows-source.yaml
+    with:
+      foo: bar
+    secrets:
+      EXAMPLE_REPOSITORY_SECRET: ${{ secrets.EXAMPLE_REPOSITORY_SECRET }}

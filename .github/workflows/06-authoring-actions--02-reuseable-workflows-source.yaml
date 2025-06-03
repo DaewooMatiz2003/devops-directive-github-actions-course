@@ -11,7 +11,7 @@ on:
         required: true
 
 jobs:
-  reusable_workflow_job:
+  reusable-workflow-job:
     runs-on: ubuntu-24.04
     steps:
       - name: job in reuseable workflow
