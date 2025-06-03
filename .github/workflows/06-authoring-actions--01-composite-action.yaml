@@ -1,0 +1,33 @@
+name: Hello World
+
+on:
+  workflow_dispatch:
+
+jobs:
+  hello-world-1:
+    runs-on: ubuntu-latest
+    name: A job to say hello
+    steps:
+      - uses: actions/checkout@v4
+      - id: composite-action-instance
+        uses: ./06-authoring-actions/composite-action
+        with:
+          who-to-greet: "from composite action in hello-world-1!"
+      - env:
+          RANDOM_NUMBER: ${{ steps.composite-action-instance.outputs.random-number }}
+        run: echo random-number "$RANDOM_NUMBER"
+        shell: bash
+
+  hello-world-2:
+    runs-on: ubuntu-latest
+    name: A job to say hello
+    steps:
+      - uses: actions/checkout@v4
+      - id: composite-action-instance
+        uses: ./06-authoring-actions/composite-action
+        with:
+          who-to-greet: "from composite action in hello-world-2!"
+      - env:
+          RANDOM_NUMBER: ${{ steps.composite-action-instance.outputs.random-number }}
+        run: echo random-number "$RANDOM_NUMBER"
+        shell: bash
