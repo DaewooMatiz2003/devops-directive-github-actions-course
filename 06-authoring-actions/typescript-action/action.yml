@@ -1,0 +1,17 @@
+name: Typescript action
+description: Example typescript action
+author: sidpalas
+
+inputs:
+  milliseconds:
+    description: Number of milliseconds to wait
+    required: true
+    default: '1000'
+
+outputs:
+  time:
+    description: The time the action finished
+
+runs:
+  using: node20
+  main: dist/index.js
