@@ -1,4 +1,4 @@
-name: Javascript Action
+name: Javascript Actions
 on:
   workflow_dispatch:
 
