@@ -15,7 +15,7 @@ jobs:
         uses: ./06-authoring-actions/javascript-action
         id: hello
         with:
-          who-to-greet: "from a javascript github action! 👋"
+          who-to-greet: "from a javascript github action 👋"
       # Use the output from the `hello` step
       - name: Get the output time
         run: echo "The time was ${{ steps.hello.outputs.time }}"
