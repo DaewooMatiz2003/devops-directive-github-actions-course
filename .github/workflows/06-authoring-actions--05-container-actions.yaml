@@ -3,9 +3,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  shell:
+  shell-dockerfile:
     runs-on: ubuntu-latest
-    name: Shell Container Action
+    name: Shell Container Action (dynamic Dockerfile build)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # using specific commit where action uses `image: Dockerfile`
+          ref: 9e9e442dbf64f755dfdd49d500ff93e82d8266bc
+          submodules: true
+      - name: Run container action
+        uses: ./06-authoring-actions/container-actions/shell-container-action
+        id: hello
+        with:
+          who-to-greet: "from a container github action 👋"
+      - name: Get the output time
+        run: echo "The time was ${{ steps.hello.outputs.greeting }}"
+
+  shell-public-container-image:
+    runs-on: ubuntu-latest
+    name: Shell Container Action (public container image)
     steps:
       - name: Checkout
         uses: actions/checkout@v4
