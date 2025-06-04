@@ -29,7 +29,7 @@ jobs:
         with:
           submodules: true
       - name: Hello world action step
-        uses: ./06-authoring-actions/javascript-actions/javascript-action-with-build/dist
+        uses: ./06-authoring-actions/javascript-actions/javascript-action-with-build
         id: hello
         with:
           who-to-greet: "from a javascript github action 👋"
@@ -46,7 +46,7 @@ jobs:
         with:
           submodules: true
       - name: Hello world action step
-        uses: ./06-authoring-actions/javascript-actions/typescript-action-with-build/dist
+        uses: ./06-authoring-actions/javascript-actions/typescript-action-with-build
         id: hello
         with:
           milliseconds: 5000
