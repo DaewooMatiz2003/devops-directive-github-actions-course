@@ -7,8 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Javascript action (no build)
     steps:
-      # To use this repository's private action,
-      # you must check out the repository
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run javascript action
@@ -16,7 +14,6 @@ jobs:
         id: hello
         with:
           who-to-greet: "from a javascript github action 👋"
-      # Use the output from the `hello` step
       - name: Get the output time
         run: echo "The time was ${{ steps.hello.outputs.time }}"
 
@@ -33,7 +30,6 @@ jobs:
         id: hello
         with:
           who-to-greet: "from a javascript github action 👋"
-      # Use the output from the `hello` step
       - name: Get the output time
         run: echo "The time was ${{ steps.hello.outputs.time }}"
 
