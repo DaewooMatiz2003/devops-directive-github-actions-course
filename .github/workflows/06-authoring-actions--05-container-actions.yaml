@@ -1,0 +1,20 @@
+name: Container Actions
+on:
+  workflow_dispatch:
+
+jobs:
+  shell:
+    runs-on: ubuntu-latest
+    name: Shell Container Action
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Run container action
+        uses: ./06-authoring-actions/container-actions/shell-container-action
+        id: hello
+        with:
+          who-to-greet: "from a container github action 👋"
+      - name: Get the output time
+        run: echo "The time was ${{ steps.hello.outputs.greeting }}"
