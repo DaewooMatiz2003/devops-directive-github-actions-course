@@ -16,8 +16,8 @@ jobs:
         id: hello
         with:
           who-to-greet: "from a container github action 👋"
-      - name: Get the output time
-        run: echo "The time was ${{ steps.hello.outputs.greeting }}"
+      - name: Get the output greeting
+        run: echo "The greeting was ${{ steps.hello.outputs.greeting }}"
 
   shell-public-container-image:
     runs-on: ubuntu-latest
@@ -30,8 +30,8 @@ jobs:
         id: hello
         with:
           who-to-greet: "from a container github action 👋"
-      - name: Get the output time
-        run: echo "The time was ${{ steps.hello.outputs.greeting }}"
+      - name: Get the output greeting
+        run: echo "The greeting was ${{ steps.hello.outputs.greeting }}"
 
   # python-dockerfile:
   #   runs-on: ubuntu-latest
