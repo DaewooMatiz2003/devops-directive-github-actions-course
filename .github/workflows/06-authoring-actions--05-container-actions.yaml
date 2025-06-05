@@ -35,7 +35,7 @@ jobs:
 
   python-dockerfile:
     runs-on: ubuntu-latest
-    name: Shell Container Action (dynamic Dockerfile build)
+    name: Python Container Action (dynamic Dockerfile build)
     steps:
       - name: Checkout
         uses: actions/checkout@v4
