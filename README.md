@@ -6,7 +6,7 @@ This is the companion repo to: [TODO: Add YouTube Video Link]()
 
 ## 🙌 Sponsored by Namespace Labs
 
-This course is made possible thanks to namespace.so, the best way level up your software build and developer workflows!
+This course is made possible thanks to [namespace.so](https://namespace.so),the best way level up your software build and developer workflows!
 
 
 [![](./readme-assets/namespace-screenshot.png)](https://namespace.so/)
