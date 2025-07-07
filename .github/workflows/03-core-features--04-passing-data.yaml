@@ -28,9 +28,12 @@ jobs:
           echo "FOO=${foo}" >> "$GITHUB_ENV"
 
       - name: Inspect values inside job-1
+        env:
+          STEP_SCOPED: THIS_IS_SCOPED_TO_THIS_STEP
         run: |
           echo "GLOBAL (workflow-level):    $GLOBAL"
           echo "JOB_1 (job-level):          $JOB_1"
+          echo "STEP (step-level):          $STEP"
           echo "FOO (set via GITHUB_ENV):   $FOO"
           echo "foo (step output):          ${{ steps.generate-foo.outputs.foo }}"
 
