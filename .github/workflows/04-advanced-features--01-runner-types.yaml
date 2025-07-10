@@ -61,7 +61,7 @@ jobs:
   ######################################
   #  3RD PARTY HOSTED RUNNERS
   ######################################
-  #  There are companies which provide hosted runners that provide hosted runners that provide increased performance for less $$$
+  #  There are companies which host GitHub Action runners that provide increased performance for less $$$
   # 
   #   One such company happens to be the sponsor of the course! 🙏
   # 
