@@ -1,6 +1,7 @@
 name: Runner types
 on:
   workflow_dispatch:
+  
 jobs:
   github-hosted-ubuntu-vm:
     name: Ubuntu 24.04 VM
@@ -42,5 +43,13 @@ jobs:
           echo "Runner name (type): ${{ runner.name }}"
           echo "Container image:   $(grep PRETTY_NAME /etc/os-release)"
 
+  namespace-ubuntu-vm:
+    name: 
+    runs-on: namespace-profile-default
+    steps:
+      - name: Show runner info
+        run: |
+          echo "Hello from ${{ runner.os }}-${{ runner.arch }}"
+          echo "Runner name (type): ${{ runner.name }}"
+  
   # TODO: Add self-hosted (runs-on/k8s/actuated/railway)
-  # TODO: Add 3rd party runners (Depot/BuildJet/namespace/Ubicloud/WarpBuild)

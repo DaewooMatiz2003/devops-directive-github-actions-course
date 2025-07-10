@@ -1,4 +1,4 @@
-name: Passing Variables between Jobs
+name: Passing Variables Between jobs
 on:
   workflow_dispatch:
 
@@ -6,7 +6,6 @@ jobs:
   producer:
     runs-on: ubuntu-24.04
 
-    # Make foo available to other jobs
     outputs:
       foo: ${{ steps.generate-foo.outputs.foo }}
     steps:
