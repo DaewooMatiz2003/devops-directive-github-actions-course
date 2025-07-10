@@ -1,7 +1,7 @@
 name: Runner types
 on:
   workflow_dispatch:
-  
+
 jobs:
   github-hosted-ubuntu-vm:
     name: Ubuntu 24.04 VM
@@ -44,7 +44,7 @@ jobs:
           echo "Container image:   $(grep PRETTY_NAME /etc/os-release)"
 
   namespace-ubuntu-vm:
-    name: 
+    name: Namespace Ubuntu VM
     runs-on: namespace-profile-default
     steps:
       - name: Show runner info
