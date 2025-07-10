@@ -71,7 +71,7 @@ jobs:
   #  and it only takes changing a single line of yaml:
   #  
   #  - runs-on: ubuntu-24.04 
-  #  + runs-on: namespace-profile-default # The default is Ubuntu 22.04
+  #  + runs-on: namespace-profile-default # The default as of July 2025 is Ubuntu 22.04
   #
   #  (They also offer MacOS and Windows runners!)
   ######################################
