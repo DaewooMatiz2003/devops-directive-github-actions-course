@@ -46,7 +46,7 @@ jobs:
           echo "Hello from ${{ runner.os }}-${{ runner.arch }}"
           echo "Runner name (type): ${{ runner.name }}"
 
-  alpine-container:
+  alpine-container-on-github-hosted-ubuntu-vm:
     name: Alpine container on Ubuntu VM
     runs-on: ubuntu-24.04
     container:
