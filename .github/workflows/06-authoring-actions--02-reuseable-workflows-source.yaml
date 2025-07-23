@@ -23,10 +23,10 @@ jobs:
     steps:
       - name: job in reusable workflow
         env:
-          # from repo/org level
+          # explicit input
           FOO: ${{ inputs.foo }}
+          # from repo/org level
           EXAMPLE_REPOSITORY_SECRET: ${{ secrets.EXAMPLE_REPOSITORY_SECRET }}
-
           # from the **environment** selected above
           EXAMPLE_ENVIRONMENT_SECRET: ${{ secrets.EXAMPLE_ENVIRONMENT_SECRET }}
           EXAMPLE_ENVIRONMENT_VARIABLE: ${{ vars.EXAMPLE_ENVIRONMENT_VARIABLE }}
