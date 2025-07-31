@@ -8,11 +8,11 @@ on:
     inputs:
       large_size_mb:
         description: "Large file size (MB, random data)"
-        default: "512"
+        default: "2048"
         required: true
       small_count:
         description: "Number of small files"
-        default: "20000"
+        default: "100000"
         required: true
       small_size_bytes:
         description: "Size of each small file (bytes, random data)"
@@ -33,10 +33,10 @@ env:
   # Don’t change: separate subpaths for each cache impl so they don’t interfere.
   ACTIONS_DIR: actions
   NSCLOUD_DIR: nscloud
-  LARGE_SIZE_MB: ${{ inputs.large_size_mb || '512' }}
-  SMALL_COUNT: ${{ inputs.small_count || '20000' }}
+  LARGE_SIZE_MB: ${{ inputs.large_size_mb || '2048' }}
+  SMALL_COUNT: ${{ inputs.small_count || '100000' }}
   SMALL_SIZE_BYTES: ${{ inputs.small_size_bytes || '4096' }}
-  SALT: ${{ inputs.salt || 'v1'}}
+  SALT: ${{ inputs.salt || 'v2'}}
 
 jobs:
   # --------------------------
