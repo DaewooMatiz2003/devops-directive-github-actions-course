@@ -43,7 +43,7 @@ jobs:
   # Scenario A: LARGE FILE
   # --------------------------
   large-action-prime:
-    name: Large (prime/save both caches)
+    name: Large (prime/save action cache)
     runs-on: ubuntu-latest
     steps:
       - name: Prepare paths
@@ -84,7 +84,7 @@ jobs:
         shell: bash
 
   large-nscloud-prime:
-    name: Large (prime/save both caches)
+    name: Large (prime/save nscloud cache)
     runs-on: namespace-profile-cache-test
     steps:
       - name: Prepare paths
@@ -93,9 +93,11 @@ jobs:
           mkdir -p "$ROOT_DIR/large/$ACTIONS_DIR" "$ROOT_DIR/large/$NSCLOUD_DIR"
         shell: bash
 
-      # --------------- Namespace cache - save (requires Namespace runner) ---------------
-      # We can "prepare" the nscloud cache dir here on ubuntu; the actual cache wiring
-      # and persistence happen in the nscloud jobs that run on the Namespace runner.
+      - name: Upload NSCLOUD-large data for the Namespace job
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: ${{ env.ROOT_DIR }}/large/${{ env.NSCLOUD_DIR }}
+
       - name: Generate large file for NSCLOUD cache (data)
         id: gen_nscloud_large
         run: |
@@ -109,11 +111,6 @@ jobs:
           du -s --block-size=1 "$dir" | awk '{print "bytes="$1}' >> "$GITHUB_OUTPUT"
           find "$dir" -type f | wc -l | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
         shell: bash
-
-      - name: Upload NSCLOUD-large data for the Namespace job
-        uses: namespacelabs/nscloud-cache-action@v1
-        with:
-          path: ${{ env.ROOT_DIR }}/large/${{ env.NSCLOUD_DIR }}
 
       - name: Write summary
         run: |
@@ -157,11 +154,6 @@ jobs:
             "${{ steps.measure_actions_large.outputs.bytes }}" \
             > results-large-actions.json
         shell: bash
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: results-large-actions
-          path: results-large-actions.json
 
       - name: Summary
         run: |
@@ -211,7 +203,7 @@ jobs:
   # Scenario B: MANY SMALL FILES
   # --------------------------
   many-action-prime:
-    name: Many files (prime/save both caches)
+    name: Many files (prime/save action cache)
     runs-on: ubuntu-latest
     steps:
       - name: Prepare paths
@@ -219,6 +211,13 @@ jobs:
           set -euo pipefail
           mkdir -p "$ROOT_DIR/many/$ACTIONS_DIR" "$ROOT_DIR/many/$NSCLOUD_DIR"
         shell: bash
+
+      - name: Save ACTIONS cache (many)
+        id: save_actions_many
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.ROOT_DIR }}/many/${{ env.ACTIONS_DIR }}
+          key: many-actions-${{ runner.os }}-${{ env.SMALL_COUNT }}x${{ env.SMALL_SIZE_BYTES }}-${{ env.SALT }}
 
       - name: Generate MANY small files for ACTIONS cache
         id: gen_actions_many
@@ -237,13 +236,6 @@ jobs:
           find "$dir" -type f | wc -l | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
         shell: bash
 
-      - name: Save ACTIONS cache (many)
-        id: save_actions_many
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ env.ROOT_DIR }}/many/${{ env.ACTIONS_DIR }}
-          key: many-actions-${{ runner.os }}-${{ env.SMALL_COUNT }}x${{ env.SMALL_SIZE_BYTES }}-${{ env.SALT }}
-
       - name: Write summary
         run: |
           cat >> "$GITHUB_STEP_SUMMARY" <<EOF
@@ -254,7 +246,7 @@ jobs:
         shell: bash
 
   many-nscloud-prime:
-    name: Many files (prime/save cache)
+    name: Many files (prime/save nscloud cache)
     runs-on: namespace-profile-cache-test
     steps:
       - name: Prepare paths
@@ -262,6 +254,11 @@ jobs:
           set -euo pipefail
           mkdir -p "$ROOT_DIR/many/$ACTIONS_DIR" "$ROOT_DIR/many/$NSCLOUD_DIR"
         shell: bash
+
+      - name: Set up Namespace cache (many)
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: ${{ env.ROOT_DIR }}/many/${{ env.NSCLOUD_DIR }}
 
       - name: Generate MANY small files for NSCLOUD cache (data)
         id: gen_nscloud_many
@@ -279,11 +276,6 @@ jobs:
           du -s --block-size=1 "$dir" | awk '{print "bytes="$1}' >> "$GITHUB_OUTPUT"
           find "$dir" -type f | wc -l | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
         shell: bash
-
-      - name: Set up Namespace cache (many)
-        uses: namespacelabs/nscloud-cache-action@v1
-        with:
-          path: ${{ env.ROOT_DIR }}/many/${{ env.NSCLOUD_DIR }}
 
       - name: Write summary
         run: |
@@ -328,11 +320,6 @@ jobs:
             > results-many-actions.json
         shell: bash
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: results-many-actions
-          path: results-many-actions.json
-
       - name: Summary
         run: |
           echo "### Many (ACTIONS restore)" >> "$GITHUB_STEP_SUMMARY"
@@ -348,12 +335,6 @@ jobs:
       - name: Set up Namespace cache (many)
         uses: namespacelabs/nscloud-cache-action@v1
         with:
-          path: ${{ env.ROOT_DIR }}/many/${{ env.NSCLOUD_DIR }}
-
-      - name: Download seed artifact and place into nscloud cache path
-        uses: actions/download-artifact@v4
-        with:
-          name: ns-many-seed
           path: ${{ env.ROOT_DIR }}/many/${{ env.NSCLOUD_DIR }}
 
       - name: Measure NSCLOUD "restore" time (many)
@@ -376,8 +357,3 @@ jobs:
             "${{ steps.measure_ns_many.outputs.bytes }}" \
             > results-many-nscloud.json
         shell: bash
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: results-many-nscloud
-          path: results-many-nscloud.json
