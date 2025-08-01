@@ -82,8 +82,8 @@ jobs:
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
-            ${{ env.ROOT_DIR }}/large
             ${{ env.ROOT_DIR }}/many
+            ${{ env.ROOT_DIR }}/large
 
       - name: Generate large file (NSCLOUD)
         id: gen_nscloud_large
