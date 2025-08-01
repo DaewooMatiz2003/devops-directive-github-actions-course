@@ -2,15 +2,14 @@ name: Cache Benchmark
 
 on:
   push:
-    branches:
-      - sp/cache-benchmark
+    branches: [sp/cache-benchmark]
 
 permissions:
   contents: read
   actions: read
 
 env:
-  # Shared dirs
+  # Shared settings
   ROOT_DIR: bench
   LARGE_SIZE_MB: "2048"
   SMALL_COUNT: "100000"
@@ -18,49 +17,49 @@ env:
   SALT: "v2"
 
 jobs:
+  # --------------------------------------------------------------------
+  # Prime caches
+  # --------------------------------------------------------------------
   action-cache-prime:
-    name: Prime/save GHA cache)
+    name: Prime ACTIONS cache
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare paths
+      - name: Prepare directories
+        shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$ROOT_DIR/large" "$ROOT_DIR/many"
-        shell: bash
 
-      - name: Generate large file for ACTIONS cache
+      - name: Generate large file (ACTIONS)
         id: gen_actions_large
+        shell: bash
         run: |
           set -euo pipefail
           dir="$ROOT_DIR/large"
-          size_mb="${{ env.LARGE_SIZE_MB }}"
-          dd if=/dev/urandom of="$dir/large.bin" bs=1M count="$size_mb" status=none
-          du -s --block-size=1 "$dir" | awk '{print "bytes="$1}' >> "$GITHUB_OUTPUT"
-          find "$dir" -type f | wc -l | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
-        shell: bash
+          dd if=/dev/urandom of="$dir/large.bin" bs=1M count="$LARGE_SIZE_MB" status=none
+          du -s --block-size=1 "$dir" | awk '{print "bytes="$1}'   >> "$GITHUB_OUTPUT"
+          find "$dir" -type f | wc -l       | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
 
-      - name: Save ACTIONS cache (large)
+      - name: Cache large file (ACTIONS)
         id: save_actions_large
         uses: actions/cache/save@v4
         with:
           path: ${{ env.ROOT_DIR }}/large
           key: large-actions-${{ runner.os }}-${{ env.LARGE_SIZE_MB }}mb-${{ env.SALT }}
 
-      - name: Generate MANY small files for ACTIONS cache
+      - name: Generate many small files (ACTIONS)
         id: gen_actions_many
+        shell: bash
         run: |
           set -euo pipefail
           dir="$ROOT_DIR/many"
-          count="${{ env.SMALL_COUNT }}"
-          size="${{ env.SMALL_SIZE_BYTES }}"
-          for i in $(seq 1 "$count"); do
-            dd if=/dev/urandom of="$dir/file_$i.bin" bs="$size" count=1 status=none
+          for i in $(seq 1 "$SMALL_COUNT"); do
+            dd if=/dev/urandom of="$dir/file_$i.bin" bs="$SMALL_SIZE_BYTES" count=1 status=none
           done
-          du -s --block-size=1 "$dir" | awk '{print "bytes="$1}' >> "$GITHUB_OUTPUT"
-          find "$dir" -type f | wc -l | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
-        shell: bash
+          du -s --block-size=1 "$dir" | awk '{print "bytes="$1}'   >> "$GITHUB_OUTPUT"
+          find "$dir" -type f | wc -l       | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
 
-      - name: Save ACTIONS cache (many)
+      - name: Cache many small files (ACTIONS)
         id: save_actions_many
         uses: actions/cache/save@v4
         with:
@@ -68,56 +67,56 @@ jobs:
           key: many-actions-${{ runner.os }}-${{ env.SMALL_COUNT }}x${{ env.SMALL_SIZE_BYTES }}-${{ env.SALT }}
 
   nscloud-cache-prime:
-    name: Prime/save nscloud cache
+    name: Prime NSCLOUD cache
     runs-on: namespace-profile-cache-test
     steps:
-      - name: Prepare paths
+      - name: Prepare directories
+        shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$ROOT_DIR/large" "$ROOT_DIR/many"
-        shell: bash
 
-      - name: Upload NSCLOUD-large data for the Namespace job
+      - name: Attach nscloud cache volumes
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
             ${{ env.ROOT_DIR }}/large
             ${{ env.ROOT_DIR }}/many
 
-      - name: Generate large file for NSCLOUD cache (data)
+      - name: Generate large file (NSCLOUD)
         id: gen_nscloud_large
+        shell: bash
         run: |
           set -euo pipefail
           dir="$ROOT_DIR/large"
-          size_mb="${{ env.LARGE_SIZE_MB }}"
-          dd if=/dev/urandom of="$dir/large.bin" bs=1M count="$size_mb" status=none
-          du -s --block-size=1 "$dir" | awk '{print "bytes="$1}' >> "$GITHUB_OUTPUT"
-          find "$dir" -type f | wc -l | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
-        shell: bash
+          dd if=/dev/urandom of="$dir/large.bin" bs=1M count="$LARGE_SIZE_MB" status=none
+          du -s --block-size=1 "$dir" | awk '{print "bytes="$1}'   >> "$GITHUB_OUTPUT"
+          find "$dir" -type f | wc -l       | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
 
-      - name: Generate MANY small files for NSCLOUD cache (data)
+      - name: Generate many small files (NSCLOUD)
         id: gen_nscloud_many
+        shell: bash
         run: |
           set -euo pipefail
           dir="$ROOT_DIR/many"
-          count="${{ env.SMALL_COUNT }}"
-          size="${{ env.SMALL_SIZE_BYTES }}"
-          for i in $(seq 1 "$count"); do
-            dd if=/dev/urandom of="$dir/file_$i.bin" bs="$size" count=1 status=none
+          for i in $(seq 1 "$SMALL_COUNT"); do
+            dd if=/dev/urandom of="$dir/file_$i.bin" bs="$SMALL_SIZE_BYTES" count=1 status=none
           done
-          du -s --block-size=1 "$dir" | awk '{print "bytes="$1}' >> "$GITHUB_OUTPUT"
-          find "$dir" -type f | wc -l | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
-        shell: bash
+          du -s --block-size=1 "$dir" | awk '{print "bytes="$1}'   >> "$GITHUB_OUTPUT"
+          find "$dir" -type f | wc -l       | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
 
-      - name: Check for files
+      - name: Verify files
+        shell: bash
         run: |
-          ls -lh $ROOT_DIR/large
-          ls -1 $ROOT_DIR/many | wc -l
-        shell: bash
+          ls -lh "$ROOT_DIR/large"
+          echo "Small files: $(find \"$ROOT_DIR/many\" -type f | wc -l)"
 
+  # --------------------------------------------------------------------
+  # Restore benchmarks
+  # --------------------------------------------------------------------
   large-restore-actions:
-    name: Large (restore from actions/cache@v4)
-    needs: [action-cache-prime]
+    name: Restore large file from ACTIONS
+    needs: action-cache-prime
     runs-on: ubuntu-latest
     steps:
       - name: Restore ACTIONS cache (large)
@@ -127,31 +126,27 @@ jobs:
           path: ${{ env.ROOT_DIR }}/large
           key: large-actions-${{ runner.os }}-${{ env.LARGE_SIZE_MB }}mb-${{ env.SALT }}
 
-      - name: Check for file
-        run: |
-          dir="$ROOT_DIR/large"
-          ls -lh $dir
+      - name: Verify file
         shell: bash
+        run: ls -lh "$ROOT_DIR/large"
 
   large-restore-nscloud:
-    name: Large (restore from nscloud-cache-action@v1)
-    needs: [nscloud-cache-prime]
+    name: Restore large file from NSCLOUD
+    needs: nscloud-cache-prime
     runs-on: namespace-profile-cache-test
     steps:
-      - name: Set up Namespace cache (large)
+      - name: Attach nscloud cache volume
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: ${{ env.ROOT_DIR }}/large
 
-      - name: Check for file
-        run: |
-          dir="$ROOT_DIR/large"
-          ls -lh $dir
+      - name: Verify file
         shell: bash
+        run: ls -lh "$ROOT_DIR/large"
 
   many-restore-actions:
-    name: Many (restore from actions/cache@v4)
-    needs: [action-cache-prime]
+    name: Restore many files from ACTIONS
+    needs: action-cache-prime
     runs-on: ubuntu-latest
     steps:
       - name: Restore ACTIONS cache (many)
@@ -161,24 +156,22 @@ jobs:
           path: ${{ env.ROOT_DIR }}/many
           key: many-actions-${{ runner.os }}-${{ env.SMALL_COUNT }}x${{ env.SMALL_SIZE_BYTES }}-${{ env.SALT }}
 
-      - name: Check for files
-        run: |
-          dir="$ROOT_DIR/many"
-          ls -1 $dir | wc -l
+      - name: Verify files count
         shell: bash
+        run: |
+          echo "Files restored: $(find \"$ROOT_DIR/many\" -type f | wc -l)"
 
   many-restore-nscloud:
-    name: Many (restore from nscloud-cache-action@v1)
-    needs: [nscloud-cache-prime]
+    name: Restore many files from NSCLOUD
+    needs: nscloud-cache-prime
     runs-on: namespace-profile-cache-test
     steps:
-      - name: Set up Namespace cache (many)
+      - name: Attach nscloud cache volume
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: ${{ env.ROOT_DIR }}/many
 
-      - name: Check for files
-        run: |
-          dir="$ROOT_DIR/many"
-          ls -1 $dir | wc -l
+      - name: Verify files count
         shell: bash
+        run: |
+          echo "Files restored: $(find \"$ROOT_DIR/many\" -type f | wc -l)"
