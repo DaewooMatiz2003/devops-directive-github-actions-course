@@ -40,11 +40,7 @@ jobs:
           set -euo pipefail
           dir="$ROOT_DIR/large/$ACTIONS_DIR"
           size_mb="${{ env.LARGE_SIZE_MB }}"
-          # Time data generation
-          t0=$(date +%s%N)
           dd if=/dev/urandom of="$dir/large.bin" bs=1M count="$size_mb" status=none
-          t1=$(date +%s%N)
-          printf "gen_ms=%d\n" $(( (t1 - t0)/1000000 )) >> "$GITHUB_OUTPUT"
           du -s --block-size=1 "$dir" | awk '{print "bytes="$1}' >> "$GITHUB_OUTPUT"
           find "$dir" -type f | wc -l | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
         shell: bash
@@ -55,15 +51,6 @@ jobs:
         with:
           path: ${{ env.ROOT_DIR }}/large/${{ env.ACTIONS_DIR }}
           key: large-actions-${{ runner.os }}-${{ env.LARGE_SIZE_MB }}mb-${{ env.SALT }}
-
-      - name: Write summary
-        run: |
-          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
-          ### Large (prime)
-          - ACTIONS data: ${{ steps.gen_actions_large.outputs.files }} files, ${{ steps.gen_actions_large.outputs.bytes }} bytes, gen: ${{ steps.gen_actions_large.outputs.gen_ms }} ms
-          - Saved ACTIONS cache key: `large-actions-${{ runner.os }}-${{ env.LARGE_SIZE_MB }}mb-${{ env.SALT }}`
-          EOF
-        shell: bash
 
   large-nscloud-prime:
     name: Large (prime/save nscloud cache)
@@ -87,21 +74,15 @@ jobs:
           set -euo pipefail
           dir="$ROOT_DIR/large/$NSCLOUD_DIR"
           size_mb="${{ env.LARGE_SIZE_MB }}"
-          t0=$(date +%s%N)
           dd if=/dev/urandom of="$dir/large.bin" bs=1M count="$size_mb" status=none
-          t1=$(date +%s%N)
-          printf "gen_ms=%d\n" $(( (t1 - t0)/1000000 )) >> "$GITHUB_OUTPUT"
           du -s --block-size=1 "$dir" | awk '{print "bytes="$1}' >> "$GITHUB_OUTPUT"
           find "$dir" -type f | wc -l | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
         shell: bash
 
-      - name: Write summary
+      - name: Check for file
         run: |
-          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
-          ### Large (prime)
-          - NSCLOUD data: ${{ steps.gen_nscloud_large.outputs.files }} files, ${{ steps.gen_nscloud_large.outputs.bytes }} bytes, gen: ${{ steps.gen_nscloud_large.outputs.gen_ms }} ms
-          - Saved ACTIONS cache key: `large-actions-${{ runner.os }}-${{ env.LARGE_SIZE_MB }}mb-${{ env.SALT }}`
-          EOF
+          dir="$ROOT_DIR/large/$NSCLOUD_DIR"
+          ls -lh $dir
         shell: bash
 
   large-restore-actions:
@@ -127,7 +108,6 @@ jobs:
           path: ${{ env.ROOT_DIR }}/large/${{ env.NSCLOUD_DIR }}
 
       - name: Check for file
-        id: measure_ns_large
         run: |
           dir="$ROOT_DIR/large/$NSCLOUD_DIR"
           ls -lh $dir
@@ -153,12 +133,9 @@ jobs:
           dir="$ROOT_DIR/many/$ACTIONS_DIR"
           count="${{ env.SMALL_COUNT }}"
           size="${{ env.SMALL_SIZE_BYTES }}"
-          t0=$(date +%s%N)
           for i in $(seq 1 "$count"); do
             dd if=/dev/urandom of="$dir/file_$i.bin" bs="$size" count=1 status=none
           done
-          t1=$(date +%s%N)
-          printf "gen_ms=%d\n" $(( (t1 - t0)/1000000 )) >> "$GITHUB_OUTPUT"
           du -s --block-size=1 "$dir" | awk '{print "bytes="$1}' >> "$GITHUB_OUTPUT"
           find "$dir" -type f | wc -l | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
         shell: bash
@@ -192,14 +169,17 @@ jobs:
           dir="$ROOT_DIR/many/$NSCLOUD_DIR"
           count="${{ env.SMALL_COUNT }}"
           size="${{ env.SMALL_SIZE_BYTES }}"
-          t0=$(date +%s%N)
           for i in $(seq 1 "$count"); do
             dd if=/dev/urandom of="$dir/file_$i.bin" bs="$size" count=1 status=none
           done
-          t1=$(date +%s%N)
-          printf "gen_ms=%d\n" $(( (t1 - t0)/1000000 )) >> "$GITHUB_OUTPUT"
           du -s --block-size=1 "$dir" | awk '{print "bytes="$1}' >> "$GITHUB_OUTPUT"
           find "$dir" -type f | wc -l | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - name: Check for files
+        run: |
+          dir="$ROOT_DIR/many/$NSCLOUD_DIR"
+          ls -1 $dir | wc -l
         shell: bash
 
   many-restore-actions:
@@ -225,7 +205,6 @@ jobs:
           path: ${{ env.ROOT_DIR }}/many/${{ env.NSCLOUD_DIR }}
 
       - name: Check for files
-        id: measure_ns_large
         run: |
           dir="$ROOT_DIR/many/$NSCLOUD_DIR"
           ls -1 $dir | wc -l
