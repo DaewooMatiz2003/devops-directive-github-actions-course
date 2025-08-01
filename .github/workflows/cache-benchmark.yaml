@@ -4,24 +4,6 @@ on:
   push:
     branches:
       - sp/cache-benchmark
-  workflow_dispatch:
-    inputs:
-      large_size_mb:
-        description: "Large file size (MB, random data)"
-        default: "2048"
-        required: true
-      small_count:
-        description: "Number of small files"
-        default: "100000"
-        required: true
-      small_size_bytes:
-        description: "Size of each small file (bytes, random data)"
-        default: "4096"
-        required: true
-      salt:
-        description: "Change to avoid colliding with old keys"
-        default: "v1"
-        required: true
 
 permissions:
   contents: read
@@ -33,10 +15,10 @@ env:
   # Don’t change: separate subpaths for each cache impl so they don’t interfere.
   ACTIONS_DIR: actions
   NSCLOUD_DIR: nscloud
-  LARGE_SIZE_MB: ${{ inputs.large_size_mb || '2048' }}
-  SMALL_COUNT: ${{ inputs.small_count || '100000' }}
-  SMALL_SIZE_BYTES: ${{ inputs.small_size_bytes || '4096' }}
-  SALT: ${{ inputs.salt || 'v2'}}
+  LARGE_SIZE_MB: "2048"
+  SMALL_COUNT: "100000"
+  SMALL_SIZE_BYTES: "4096"
+  SALT: "v2"
 
 jobs:
   # --------------------------
@@ -49,7 +31,7 @@ jobs:
       - name: Prepare paths
         run: |
           set -euo pipefail
-          mkdir -p "$ROOT_DIR/large/$ACTIONS_DIR" "$ROOT_DIR/large/$NSCLOUD_DIR"
+          mkdir -p "$ROOT_DIR/large/$ACTIONS_DIR"
         shell: bash
 
       - name: Generate large file for ACTIONS cache
@@ -90,13 +72,14 @@ jobs:
       - name: Prepare paths
         run: |
           set -euo pipefail
-          mkdir -p "$ROOT_DIR/large/$ACTIONS_DIR" "$ROOT_DIR/large/$NSCLOUD_DIR"
+          mkdir -p "$ROOT_DIR/large/$NSCLOUD_DIR"
         shell: bash
 
       - name: Upload NSCLOUD-large data for the Namespace job
         uses: namespacelabs/nscloud-cache-action@v1
         with:
-          path: ${{ env.ROOT_DIR }}/large/${{ env.NSCLOUD_DIR }}
+          path: |
+            ${{ env.ROOT_DIR }}/large/${{ env.NSCLOUD_DIR }}
 
       - name: Generate large file for NSCLOUD cache (data)
         id: gen_nscloud_large
@@ -133,35 +116,6 @@ jobs:
           path: ${{ env.ROOT_DIR }}/large/${{ env.ACTIONS_DIR }}
           key: large-actions-${{ runner.os }}-${{ env.LARGE_SIZE_MB }}mb-${{ env.SALT }}
 
-      - name: Measure ACTIONS restore time (large)
-        id: measure_actions_large
-        run: |
-          set -euo pipefail
-          t0=$(date +%s%N)
-          # Touch the directory to ensure we measure filesystem readiness.
-          test -f "${ROOT_DIR}/large/${ACTIONS_DIR}/large.bin"
-          t1=$(date +%s%N)
-          du -s --block-size=1 "$ROOT_DIR/large/$ACTIONS_DIR" | awk '{print "bytes="$1}' >> "$GITHUB_OUTPUT"
-          echo "ms=$(( (t1 - t0)/1000000 ))" >> "$GITHUB_OUTPUT"
-          find "$ROOT_DIR/large/$ACTIONS_DIR" -type f | wc -l | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
-        shell: bash
-
-      - name: Save results
-        run: |
-          printf '{"scenario":"large","impl":"actions","restore_ms":%s,"files":%s,"bytes":%s}\n' \
-            "${{ steps.measure_actions_large.outputs.ms }}" \
-            "${{ steps.measure_actions_large.outputs.files }}" \
-            "${{ steps.measure_actions_large.outputs.bytes }}" \
-            > results-large-actions.json
-        shell: bash
-
-      - name: Summary
-        run: |
-          echo "### Large (ACTIONS restore)" >> "$GITHUB_STEP_SUMMARY"
-          echo "- cache-hit: ${{ steps.restore_actions_large.outputs.cache-hit }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- restore: ${{ steps.measure_actions_large.outputs.ms }} ms" >> "$GITHUB_STEP_SUMMARY"
-        shell: bash
-
   large-restore-nscloud:
     name: Large (restore from nscloud-cache-action@v1)
     needs: [large-nscloud-prime]
@@ -172,31 +126,11 @@ jobs:
         with:
           path: ${{ env.ROOT_DIR }}/large/${{ env.NSCLOUD_DIR }}
 
-      - name: Measure NSCLOUD "restore" time (large)
+      - name: Check for file
         id: measure_ns_large
         run: |
-          set -euo pipefail
-          t0=$(date +%s%N)
-          test -f "${ROOT_DIR}/large/${NSCLOUD_DIR}/large.bin"
-          t1=$(date +%s%N)
-          du -s --block-size=1 "$ROOT_DIR/large/$NSCLOUD_DIR" | awk '{print "bytes="$1}' >> "$GITHUB_OUTPUT"
-          echo "ms=$(( (t1 - t0)/1000000 ))" >> "$GITHUB_OUTPUT"
-          find "$ROOT_DIR/large/$NSCLOUD_DIR" -type f | wc -l | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
-        shell: bash
-
-      - name: Save results
-        run: |
-          printf '{"scenario":"large","impl":"nscloud","restore_ms":%s,"files":%s,"bytes":%s}\n' \
-            "${{ steps.measure_ns_large.outputs.ms }}" \
-            "${{ steps.measure_ns_large.outputs.files }}" \
-            "${{ steps.measure_ns_large.outputs.bytes }}" \
-            > results-large-nscloud.json
-        shell: bash
-
-      - name: Summary
-        run: |
-          echo "### Large (NSCLOUD restore)" >> "$GITHUB_STEP_SUMMARY"
-          echo "- restore: ${{ steps.measure_ns_large.outputs.ms }} ms" >> "$GITHUB_STEP_SUMMARY"
+          dir="$ROOT_DIR/large/$NSCLOUD_DIR"
+          ls -lh $dir
         shell: bash
 
   # --------------------------
@@ -209,15 +143,8 @@ jobs:
       - name: Prepare paths
         run: |
           set -euo pipefail
-          mkdir -p "$ROOT_DIR/many/$ACTIONS_DIR" "$ROOT_DIR/many/$NSCLOUD_DIR"
+          mkdir -p "$ROOT_DIR/many/$ACTIONS_DIR"
         shell: bash
-
-      - name: Save ACTIONS cache (many)
-        id: save_actions_many
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ env.ROOT_DIR }}/many/${{ env.ACTIONS_DIR }}
-          key: many-actions-${{ runner.os }}-${{ env.SMALL_COUNT }}x${{ env.SMALL_SIZE_BYTES }}-${{ env.SALT }}
 
       - name: Generate MANY small files for ACTIONS cache
         id: gen_actions_many
@@ -236,14 +163,12 @@ jobs:
           find "$dir" -type f | wc -l | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
         shell: bash
 
-      - name: Write summary
-        run: |
-          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
-          ### Many (prime)
-          - ACTIONS data: ${{ steps.gen_actions_many.outputs.files }} files, ${{ steps.gen_actions_many.outputs.bytes }} bytes, gen: ${{ steps.gen_actions_many.outputs.gen_ms }} ms
-          - Saved ACTIONS cache key: `many-actions-${{ runner.os }}-${{ env.SMALL_COUNT }}x${{ env.SMALL_SIZE_BYTES }}-${{ env.SALT }}`
-          EOF
-        shell: bash
+      - name: Save ACTIONS cache (many)
+        id: save_actions_many
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.ROOT_DIR }}/many/${{ env.ACTIONS_DIR }}
+          key: many-actions-${{ runner.os }}-${{ env.SMALL_COUNT }}x${{ env.SMALL_SIZE_BYTES }}-${{ env.SALT }}
 
   many-nscloud-prime:
     name: Many files (prime/save nscloud cache)
@@ -252,7 +177,7 @@ jobs:
       - name: Prepare paths
         run: |
           set -euo pipefail
-          mkdir -p "$ROOT_DIR/many/$ACTIONS_DIR" "$ROOT_DIR/many/$NSCLOUD_DIR"
+          mkdir -p "$ROOT_DIR/many/$NSCLOUD_DIR"
         shell: bash
 
       - name: Set up Namespace cache (many)
@@ -277,15 +202,6 @@ jobs:
           find "$dir" -type f | wc -l | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
         shell: bash
 
-      - name: Write summary
-        run: |
-          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
-          ### Many (prime)
-          - NSCLOUD data: ${{ steps.gen_nscloud_many.outputs.files }} files, ${{ steps.gen_nscloud_many.outputs.bytes }} bytes, gen: ${{ steps.gen_nscloud_many.outputs.gen_ms }} ms
-          - Saved ACTIONS cache key: `many-actions-${{ runner.os }}-${{ env.SMALL_COUNT }}x${{ env.SMALL_SIZE_BYTES }}-${{ env.SALT }}`
-          EOF
-        shell: bash
-
   many-restore-actions:
     name: Many (restore from actions/cache@v4)
     needs: [many-action-prime]
@@ -298,35 +214,6 @@ jobs:
           path: ${{ env.ROOT_DIR }}/many/${{ env.ACTIONS_DIR }}
           key: many-actions-${{ runner.os }}-${{ env.SMALL_COUNT }}x${{ env.SMALL_SIZE_BYTES }}-${{ env.SALT }}
 
-      - name: Measure ACTIONS restore time (many)
-        id: measure_actions_many
-        run: |
-          set -euo pipefail
-          t0=$(date +%s%N)
-          # Validate presence
-          test "$(find "$ROOT_DIR/many/$ACTIONS_DIR" -type f | wc -l)" -gt 0
-          t1=$(date +%s%N)
-          du -s --block-size=1 "$ROOT_DIR/many/$ACTIONS_DIR" | awk '{print "bytes="$1}' >> "$GITHUB_OUTPUT"
-          echo "ms=$(( (t1 - t0)/1000000 ))" >> "$GITHUB_OUTPUT"
-          find "$ROOT_DIR/many/$ACTIONS_DIR" -type f | wc -l | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
-        shell: bash
-
-      - name: Save results
-        run: |
-          printf '{"scenario":"many","impl":"actions","restore_ms":%s,"files":%s,"bytes":%s}\n' \
-            "${{ steps.measure_actions_many.outputs.ms }}" \
-            "${{ steps.measure_actions_many.outputs.files }}" \
-            "${{ steps.measure_actions_many.outputs.bytes }}" \
-            > results-many-actions.json
-        shell: bash
-
-      - name: Summary
-        run: |
-          echo "### Many (ACTIONS restore)" >> "$GITHUB_STEP_SUMMARY"
-          echo "- cache-hit: ${{ steps.restore_actions_many.outputs.cache-hit }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- restore: ${{ steps.measure_actions_many.outputs.ms }} ms" >> "$GITHUB_STEP_SUMMARY"
-        shell: bash
-
   many-restore-nscloud:
     name: Many (restore from nscloud-cache-action@v1)
     needs: [many-nscloud-prime]
@@ -337,23 +224,9 @@ jobs:
         with:
           path: ${{ env.ROOT_DIR }}/many/${{ env.NSCLOUD_DIR }}
 
-      - name: Measure NSCLOUD "restore" time (many)
-        id: measure_ns_many
+      - name: Check for files
+        id: measure_ns_large
         run: |
-          set -euo pipefail
-          t0=$(date +%s%N)
-          test "$(find "$ROOT_DIR/many/$NSCLOUD_DIR" -type f | wc -l)" -gt 0
-          t1=$(date +%s%N)
-          du -s --block-size=1 "$ROOT_DIR/many/$NSCLOUD_DIR" | awk '{print "bytes="$1}' >> "$GITHUB_OUTPUT"
-          echo "ms=$(( (t1 - t0)/1000000 ))" >> "$GITHUB_OUTPUT"
-          find "$ROOT_DIR/many/$NSCLOUD_DIR" -type f | wc -l | awk '{print "files="$1}' >> "$GITHUB_OUTPUT"
-        shell: bash
-
-      - name: Save results
-        run: |
-          printf '{"scenario":"many","impl":"nscloud","restore_ms":%s,"files":%s,"bytes":%s}\n' \
-            "${{ steps.measure_ns_many.outputs.ms }}" \
-            "${{ steps.measure_ns_many.outputs.files }}" \
-            "${{ steps.measure_ns_many.outputs.bytes }}" \
-            > results-many-nscloud.json
+          dir="$ROOT_DIR/many/$NSCLOUD_DIR"
+          ls -1 $dir | wc -l
         shell: bash
