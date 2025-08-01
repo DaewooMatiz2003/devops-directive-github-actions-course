@@ -97,6 +97,12 @@ jobs:
           path: ${{ env.ROOT_DIR }}/large/${{ env.ACTIONS_DIR }}
           key: large-actions-${{ runner.os }}-${{ env.LARGE_SIZE_MB }}mb-${{ env.SALT }}
 
+      - name: Check for file
+        run: |
+          dir="$ROOT_DIR/large/$NSCLOUD_DIR"
+          ls -lh $dir
+        shell: bash
+
   large-restore-nscloud:
     name: Large (restore from nscloud-cache-action@v1)
     needs: [large-nscloud-prime]
@@ -147,6 +153,12 @@ jobs:
           path: ${{ env.ROOT_DIR }}/many/${{ env.ACTIONS_DIR }}
           key: many-actions-${{ runner.os }}-${{ env.SMALL_COUNT }}x${{ env.SMALL_SIZE_BYTES }}-${{ env.SALT }}
 
+      - name: Check for files
+        run: |
+          dir="$ROOT_DIR/many/$NSCLOUD_DIR"
+          ls -1 $dir | wc -l
+        shell: bash
+
   many-nscloud-prime:
     name: Many files (prime/save nscloud cache)
     runs-on: namespace-profile-cache-test
@@ -193,6 +205,12 @@ jobs:
         with:
           path: ${{ env.ROOT_DIR }}/many/${{ env.ACTIONS_DIR }}
           key: many-actions-${{ runner.os }}-${{ env.SMALL_COUNT }}x${{ env.SMALL_SIZE_BYTES }}-${{ env.SALT }}
+
+      - name: Check for files
+        run: |
+          dir="$ROOT_DIR/many/$NSCLOUD_DIR"
+          ls -1 $dir | wc -l
+        shell: bash
 
   many-restore-nscloud:
     name: Many (restore from nscloud-cache-action@v1)
