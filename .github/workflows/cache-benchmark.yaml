@@ -61,7 +61,7 @@ jobs:
     needs: prime-nscloud-cache
     runs-on: ubuntu-latest
     steps:
-      - run: sleep 30
+      - run: sleep 60
 
   large-restore-nscloud:
     name: Restore large file from NSCLOUD
