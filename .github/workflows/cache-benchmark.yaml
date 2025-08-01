@@ -56,9 +56,16 @@ jobs:
           ls -lh "$ROOT_DIR/large"
           ls -1 "$ROOT_DIR/many" | wc -l
 
+  wait:
+    name: Wait for nscloud cache to commit
+    needs: prime-nscloud-cache
+    runs-on: ubuntu-latest
+    steps:
+      - run: sleep 30
+
   large-restore-nscloud:
     name: Restore large file from NSCLOUD
-    needs: prime-nscloud-cache
+    needs: wait
     runs-on: namespace-profile-cache-test
     steps:
       - name: Attach nscloud cache volume
@@ -72,7 +79,7 @@ jobs:
 
   many-restore-nscloud:
     name: Restore many files from NSCLOUD
-    needs: prime-nscloud-cache
+    needs: wait
     runs-on: namespace-profile-cache-test
     steps:
       - name: Attach nscloud cache volume
