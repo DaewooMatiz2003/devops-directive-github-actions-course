@@ -8,7 +8,7 @@ Fortunately, there are ways we can iterate on actions and workflows locally to s
 
 When developing actions, there are two main things we can do to validate locally.
 
-### Write/execute tests
+### 1. Write/execute tests
 
 We can write a test suite just like any other software project.
 
@@ -19,7 +19,7 @@ npm run test
 https://github.com/actions/typescript-action/blob/7a1ec05faaad7a2d54c398cfd8b9ef358e087cf8/package.json#L35
 
 
-### Run action with local-action
+### 2. Run action with local-action
 
 GitHub has published a tool for executing and debugging github actions locally. 
 
@@ -33,7 +33,7 @@ https://github.com/actions/typescript-action/blob/7a1ec05faaad7a2d54c398cfd8b9ef
 
 ## Workflows
 
-### Move logic out of the workflow
+### 1. Move logic out of the workflow
 
 Whenever possible, you should move logic out of the workflow yaml files.
 
@@ -43,7 +43,7 @@ The goal is to be able to test as much logic as possible independently of GitHub
 
 Some logic will be very dependent on Git/GitHub related state, but many things can be written/executed separately.
 
-### Run workflow with act
+### 2. Run workflow with act
 
 Sometimes it is necessary to test things in the context of the workflow. 
 
