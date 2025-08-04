@@ -7,10 +7,10 @@ Continuous Integration (CI) has dramatically transformed the way we build, test,
 The time between writing and shipping software has shrunk drastically over the decades:
 
 | Era             | Delivery Method               | Turnaround Time        |
-|------------------|-------------------------------|------------------------|
-| 🧮 1960s–70s      | **Punch cards / Mainframes**    | Days to weeks          |
-| 💾 1980s–90s      | **Floppy disks, CDs**          | Monthly to yearly      |
-| 🌐 2000s          | **Server deployments**         | Weekly to quarterly    |
+|-----------------|-------------------------------|------------------------|
+| 🧮 1960s–70s      | **Punch cards / Mainframes**    | Forever? 😅         |
+| 💾 1980s–90s      | **Floppy disks, CDs**          | Months.              |
+| 🌐 2000s          | **Server deployments**         | Daily to weekly      |
 | ☁️ 2010s–Now      | **CI/CD pipelines & cloud**     | Multiple times per day |
 
 ![](./readme-assets/speed-of-delivery-over-time.png)
