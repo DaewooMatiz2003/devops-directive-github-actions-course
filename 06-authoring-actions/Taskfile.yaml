@@ -1,8 +1,0 @@
-version: "3"
-
-tasks:
-  run-with-local-action:
-    desc: Run the typescript action with @github/local-action
-    dir: ./javascript-actions/typescript-action-with-build
-    cmds:
-      - npx @github/local-action run . ./src/main.ts .env.example

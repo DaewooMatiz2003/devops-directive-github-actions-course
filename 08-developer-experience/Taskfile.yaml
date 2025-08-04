@@ -1,0 +1,23 @@
+version: "3"
+
+tasks:
+  typescript-action-run-local-action:
+    desc: Run the typescript action with @github/local-action
+    dir: ./javascript-actions/typescript-action-with-build
+    cmds:
+      - npm run local-action
+
+  typescript-action-test:
+    desc: Run the typescript action with @github/local-action
+    dir: ./javascript-actions/typescript-action-with-build
+    cmds:
+      - npm run test
+
+  # More examples can be found in the capstone project
+  act-trigger-hello-world:
+    cmds:
+      - |
+        act workflow_dispatch \
+          --container-architecture linux/amd64 \
+          -P ubuntu-24.04=node:16-bullseye-slim \
+          -W '../.github/workflows/03-core-features--01-hello-world.yaml'
