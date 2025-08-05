@@ -20,6 +20,10 @@ jobs:
     runs-on: namespace-profile-cache-test
     env:
       DIR: large
+    outputs:
+      files: ${{ steps.check.outputs.files }}
+      bytes: ${{ steps.check.outputs.bytes }}
+      generated: ${{ steps.generate.outcome }}
     steps:
       - name: Prepare directory
         shell: bash
@@ -82,6 +86,10 @@ jobs:
     runs-on: namespace-profile-cache-test
     env:
       DIR: many
+    outputs:
+      files: ${{ steps.check.outputs.files }}
+      bytes: ${{ steps.check.outputs.bytes }}
+      generated: ${{ steps.generate.outcome }}
     steps:
       - name: Prepare directory
         shell: bash
@@ -151,6 +159,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DIR: large
+    outputs:
+      files: ${{ steps.check.outputs.files }}
+      bytes: ${{ steps.check.outputs.bytes }}
+      generated: ${{ steps.generate.outcome }}
     steps:
       - name: Prepare directory
         shell: bash
@@ -215,6 +227,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DIR: many
+    outputs:
+      files: ${{ steps.check.outputs.files }}
+      bytes: ${{ steps.check.outputs.bytes }}
+      generated: ${{ steps.generate.outcome }}
     steps:
       - name: Prepare directory
         shell: bash
@@ -273,3 +289,26 @@ jobs:
           echo "- **Files now:** \`$files\`"             >> $GITHUB_STEP_SUMMARY
           echo "- **Bytes now:** \`$bytes\`"             >> $GITHUB_STEP_SUMMARY
           echo "- **Status:** $status"                   >> $GITHUB_STEP_SUMMARY
+
+  aggregate-summary:
+    name: Consolidated cache report
+    runs-on: ubuntu-latest
+    needs:
+      - nscloud-cache-large
+      - nscloud-cache-many
+      - actions-cache-large
+      - actions-cache-many
+
+    steps:
+      - name: Publish overall summary
+        shell: bash
+        run: |
+          echo "## Cache Benchmark – overall report" >> $GITHUB_STEP_SUMMARY
+          echo ""                                     >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Files | Bytes | Generated? |" >> $GITHUB_STEP_SUMMARY
+          echo "| --- | ----: | ----: | --------- |"  >> $GITHUB_STEP_SUMMARY
+
+          echo "| nscloud-cache-large | ${{ needs.nscloud-cache-large.outputs.files }} | ${{ needs.nscloud-cache-large.outputs.bytes }} | ${{ needs.nscloud-cache-large.outputs.generated }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| nscloud-cache-many  | ${{ needs.nscloud-cache-many.outputs.files }}  | ${{ needs.nscloud-cache-many.outputs.bytes }}  | ${{ needs.nscloud-cache-many.outputs.generated }}  |" >> $GITHUB_STEP_SUMMARY
+          echo "| actions-cache-large | ${{ needs.actions-cache-large.outputs.files }} | ${{ needs.actions-cache-large.outputs.bytes }} | ${{ needs.actions-cache-large.outputs.generated }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| actions-cache-many  | ${{ needs.actions-cache-many.outputs.files }}  | ${{ needs.actions-cache-many.outputs.bytes }}  | ${{ needs.actions-cache-many.outputs.generated }}  |" >> $GITHUB_STEP_SUMMARY
