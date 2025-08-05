@@ -37,7 +37,7 @@ jobs:
           path: ${{ env.ROOT_DIR }}/${{ env.DIR }}
 
       - name: Check if files exist
-        id: check
+        id: check-before
         shell: bash
         run: |
           set -euo pipefail
@@ -55,22 +55,16 @@ jobs:
           set -euo pipefail
           dd if=/dev/urandom of="$ROOT_DIR/$DIR/large.bin" bs=1M count="$LARGE_SIZE_MB" status=none
 
-      - name: Write job summary
+      - name: Check if files exist
+        id: check
         shell: bash
         run: |
           set -euo pipefail
-          status=$([[ "${{ steps.generate.outcome }}" == "success" ]] && echo "Generated fresh data :sparkles:" || echo "Used cached data :package:")
-          files=$(find "$ROOT_DIR/$DIR" -type f | wc -l || echo 0)
-          bytes=$(du -s --block-size=1 "$ROOT_DIR/$DIR" | cut -f1 || echo 0)
-          {
-            echo "### Cache-benchmark summary"
-            echo ""
-            echo "- **Job:** \`${{ github.job }}\`"
-            echo "- **Directory:** \`$ROOT_DIR/$DIR\`"
-            echo "- **Files now:** \`$files\`"
-            echo "- **Bytes now:** \`$bytes\`"
-            echo "- **Status:** $status"
-          } >> "$GITHUB_STEP_SUMMARY"
+          dir="$ROOT_DIR/$DIR"
+          count=$(find "$dir" -type f | wc -l || true)
+          bytes=$(du -s --block-size=1 "$dir" | cut -f1 || echo 0)
+          echo "files=$count"  >> "$GITHUB_OUTPUT"
+          echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
 
   # ───────────────────────────────────────────────────────────────
   # Namespace cache – MANY
@@ -95,8 +89,8 @@ jobs:
         with:
           path: ${{ env.ROOT_DIR }}/${{ env.DIR }}
 
-      - name: Check if files exist
-        id: check
+      - name: Check if files exist before
+        id: check-before
         shell: bash
         run: |
           set -euo pipefail
@@ -116,22 +110,16 @@ jobs:
             dd if=/dev/urandom of="$ROOT_DIR/$DIR/file_$i.bin" bs="$SMALL_SIZE_BYTES" count=1 status=none
           done
 
-      - name: Write job summary
+      - name: Check if files exist after
+        id: check
         shell: bash
         run: |
           set -euo pipefail
-          status=$([[ "${{ steps.generate.outcome }}" == "success" ]] && echo "Generated fresh data :sparkles:" || echo "Used cached data :package:")
-          files=$(find "$ROOT_DIR/$DIR" -type f | wc -l || echo 0)
-          bytes=$(du -s --block-size=1 "$ROOT_DIR/$DIR" | cut -f1 || echo 0)
-          {
-            echo "### Cache-benchmark summary"
-            echo ""
-            echo "- **Job:** \`${{ github.job }}\`"
-            echo "- **Directory:** \`$ROOT_DIR/$DIR\`"
-            echo "- **Files now:** \`$files\`"
-            echo "- **Bytes now:** \`$bytes\`"
-            echo "- **Status:** $status"
-          } >> "$GITHUB_STEP_SUMMARY"
+          dir="$ROOT_DIR/$DIR"
+          count=$(find "$dir" -type f | wc -l || true)
+          bytes=$(du -s --block-size=1 "$dir" | cut -f1 || echo 0)
+          echo "files=$count"  >> "$GITHUB_OUTPUT"
+          echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
 
   # ───────────────────────────────────────────────────────────────
   # GitHub Actions cache – LARGE
@@ -176,23 +164,6 @@ jobs:
         run: |
           set -euo pipefail
           dd if=/dev/urandom of="$ROOT_DIR/$DIR/large.bin" bs=1M count="$LARGE_SIZE_MB" status=none
-
-      - name: Write job summary
-        shell: bash
-        run: |
-          set -euo pipefail
-          status=$([[ "${{ steps.generate.outcome }}" == "success" ]] && echo "Generated fresh data :sparkles:" || echo "Used cached data :package:")
-          files=$(find "$ROOT_DIR/$DIR" -type f | wc -l || echo 0)
-          bytes=$(du -s --block-size=1 "$ROOT_DIR/$DIR" | cut -f1 || echo 0)
-          {
-            echo "### Cache-benchmark summary"
-            echo ""
-            echo "- **Job:** \`${{ github.job }}\`"
-            echo "- **Directory:** \`$ROOT_DIR/$DIR\`"
-            echo "- **Files now:** \`$files\`"
-            echo "- **Bytes now:** \`$bytes\`"
-            echo "- **Status:** $status"
-          } >> "$GITHUB_STEP_SUMMARY"
 
   # ───────────────────────────────────────────────────────────────
   # GitHub Actions cache – MANY
@@ -240,23 +211,6 @@ jobs:
             dd if=/dev/urandom of="$ROOT_DIR/$DIR/file_$i.bin" bs="$SMALL_SIZE_BYTES" count=1 status=none
           done
 
-      - name: Write job summary
-        shell: bash
-        run: |
-          set -euo pipefail
-          status=$([[ "${{ steps.generate.outcome }}" == "success" ]] && echo "Generated fresh data :sparkles:" || echo "Used cached data :package:")
-          files=$(find "$ROOT_DIR/$DIR" -type f | wc -l || echo 0)
-          bytes=$(du -s --block-size=1 "$ROOT_DIR/$DIR" | cut -f1 || echo 0)
-          {
-            echo "### Cache-benchmark summary"
-            echo ""
-            echo "- **Job:** \`${{ github.job }}\`"
-            echo "- **Directory:** \`$ROOT_DIR/$DIR\`"
-            echo "- **Files now:** \`$files\`"
-            echo "- **Bytes now:** \`$bytes\`"
-            echo "- **Status:** $status"
-          } >> "$GITHUB_STEP_SUMMARY"
-
   # ───────────────────────────────────────────────────────────────
   # Aggregate summary
   # ───────────────────────────────────────────────────────────────
@@ -275,10 +229,10 @@ jobs:
           {
             echo "## Cache Benchmark – consolidated report"
             echo ""
-            echo "| Job | Files | Bytes | Generated? |"
+            echo "| Job | Files | Bytes | Cache Hit? |"
             echo "| --- | ----: | ----: | --------- |"
-            echo "| nscloud-cache-large | ${{ needs.nscloud-cache-large.outputs.files }} | ${{ needs.nscloud-cache-large.outputs.bytes }} | ${{ needs.nscloud-cache-large.outputs.generated }} |"
-            echo "| nscloud-cache-many  | ${{ needs.nscloud-cache-many.outputs.files }}  | ${{ needs.nscloud-cache-many.outputs.bytes }}  | ${{ needs.nscloud-cache-many.outputs.generated }}  |"
-            echo "| actions-cache-large | ${{ needs.actions-cache-large.outputs.files }} | ${{ needs.actions-cache-large.outputs.bytes }} | ${{ needs.actions-cache-large.outputs.generated }} |"
-            echo "| actions-cache-many  | ${{ needs.actions-cache-many.outputs.files }}  | ${{ needs.actions-cache-many.outputs.bytes }}  | ${{ needs.actions-cache-many.outputs.generated }}  |"
+            echo "| nscloud-cache-large | ${{ needs.nscloud-cache-large.outputs.files }} | ${{ needs.nscloud-cache-large.outputs.bytes }} | ${{ needs.nscloud-cache-large.outputs.generated == "skipped" }} |"
+            echo "| nscloud-cache-many  | ${{ needs.nscloud-cache-many.outputs.files }}  | ${{ needs.nscloud-cache-many.outputs.bytes }}  | ${{ needs.nscloud-cache-many.outputs.generated == "skipped" }}  |"
+            echo "| actions-cache-large | ${{ needs.actions-cache-large.outputs.files }} | ${{ needs.actions-cache-large.outputs.bytes }} | ${{ needs.actions-cache-large.outputs.generated == "skipped" }} |"
+            echo "| actions-cache-many  | ${{ needs.actions-cache-many.outputs.files }}  | ${{ needs.actions-cache-many.outputs.bytes }}  | ${{ needs.actions-cache-many.outputs.generated == "skipped" }}  |"
           } >> "$GITHUB_STEP_SUMMARY"
