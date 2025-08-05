@@ -44,16 +44,36 @@ jobs:
           echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
 
       - name: Generate large file (NSCLOUD)
+        id: generate
         if: ${{ steps.check.outputs.files == '0' }}
         shell: bash
         run: |
           set -euo pipefail
           dd if=/dev/urandom of="$ROOT_DIR/$DIR/large.bin" bs=1M count="$LARGE_SIZE_MB" status=none
 
-      - name: Verify files
+      - name: Write job summary
         shell: bash
         run: |
-          ls -lh "$ROOT_DIR/$DIR"
+          set -euo pipefail
+
+          # Decide whether we generated or reused the cache
+          if [[ "${{ steps.generate.outcome }}" == "success" ]]; then
+            status="Generated fresh data :sparkles:"
+          else
+            status="Used cached data :package:"
+          fi
+
+          # Re-measure (post-generation, so it’s accurate)
+          files=$(find "$ROOT_DIR/$DIR" -type f | wc -l || echo 0)
+          bytes=$(du -s --block-size=1 "$ROOT_DIR/$DIR" | cut -f1 || echo 0)
+
+          echo "### Cache-benchmark summary"             >> $GITHUB_STEP_SUMMARY
+          echo ""                                        >> $GITHUB_STEP_SUMMARY
+          echo "- **Job:** \`${{ github.job }}\`"        >> $GITHUB_STEP_SUMMARY
+          echo "- **Directory:** \`$ROOT_DIR/$DIR\`"     >> $GITHUB_STEP_SUMMARY
+          echo "- **Files now:** \`$files\`"             >> $GITHUB_STEP_SUMMARY
+          echo "- **Bytes now:** \`$bytes\`"             >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** $status"                   >> $GITHUB_STEP_SUMMARY
 
   # ─────────────────────────────────────────────────────────────────────
   # Namespace cache – MANY
@@ -86,6 +106,7 @@ jobs:
           echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
 
       - name: Generate many small files (NSCLOUD)
+        id: generate
         if: ${{ steps.check.outputs.files != env.SMALL_COUNT }}
         shell: bash
         run: |
@@ -98,6 +119,30 @@ jobs:
         shell: bash
         run: |
           ls -1 "$ROOT_DIR/$DIR" | wc -l
+
+      - name: Write job summary
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Decide whether we generated or reused the cache
+          if [[ "${{ steps.generate.outcome }}" == "success" ]]; then
+            status="Generated fresh data :sparkles:"
+          else
+            status="Used cached data :package:"
+          fi
+
+          # Re-measure (post-generation, so it’s accurate)
+          files=$(find "$ROOT_DIR/$DIR" -type f | wc -l || echo 0)
+          bytes=$(du -s --block-size=1 "$ROOT_DIR/$DIR" | cut -f1 || echo 0)
+
+          echo "### Cache-benchmark summary"             >> $GITHUB_STEP_SUMMARY
+          echo ""                                        >> $GITHUB_STEP_SUMMARY
+          echo "- **Job:** \`${{ github.job }}\`"        >> $GITHUB_STEP_SUMMARY
+          echo "- **Directory:** \`$ROOT_DIR/$DIR\`"     >> $GITHUB_STEP_SUMMARY
+          echo "- **Files now:** \`$files\`"             >> $GITHUB_STEP_SUMMARY
+          echo "- **Bytes now:** \`$bytes\`"             >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** $status"                   >> $GITHUB_STEP_SUMMARY
 
   # ─────────────────────────────────────────────────────────────────────
   # GitHub Actions cache – LARGE
@@ -132,16 +177,36 @@ jobs:
           echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
 
       - name: Generate large file (ACTIONS)
+        id: generate
         if: ${{ steps.check.outputs.files == '0' }}
         shell: bash
         run: |
           set -euo pipefail
           dd if=/dev/urandom of="$ROOT_DIR/$DIR/large.bin" bs=1M count="$LARGE_SIZE_MB" status=none
 
-      - name: Verify files
+      - name: Write job summary
         shell: bash
         run: |
-          ls -lh "$ROOT_DIR/$DIR"
+          set -euo pipefail
+
+          # Decide whether we generated or reused the cache
+          if [[ "${{ steps.generate.outcome }}" == "success" ]]; then
+            status="Generated fresh data :sparkles:"
+          else
+            status="Used cached data :package:"
+          fi
+
+          # Re-measure (post-generation, so it’s accurate)
+          files=$(find "$ROOT_DIR/$DIR" -type f | wc -l || echo 0)
+          bytes=$(du -s --block-size=1 "$ROOT_DIR/$DIR" | cut -f1 || echo 0)
+
+          echo "### Cache-benchmark summary"             >> $GITHUB_STEP_SUMMARY
+          echo ""                                        >> $GITHUB_STEP_SUMMARY
+          echo "- **Job:** \`${{ github.job }}\`"        >> $GITHUB_STEP_SUMMARY
+          echo "- **Directory:** \`$ROOT_DIR/$DIR\`"     >> $GITHUB_STEP_SUMMARY
+          echo "- **Files now:** \`$files\`"             >> $GITHUB_STEP_SUMMARY
+          echo "- **Bytes now:** \`$bytes\`"             >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** $status"                   >> $GITHUB_STEP_SUMMARY
 
   # ─────────────────────────────────────────────────────────────────────
   # GitHub Actions cache – MANY
@@ -176,6 +241,7 @@ jobs:
           echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
 
       - name: Generate many small files (ACTIONS)
+        id: generate
         if: ${{ steps.check.outputs.files == '0' }}
         shell: bash
         run: |
@@ -184,7 +250,26 @@ jobs:
             dd if=/dev/urandom of="$ROOT_DIR/$DIR/file_$i.bin" bs="$SMALL_SIZE_BYTES" count=1 status=none
           done
 
-      - name: Verify files
+      - name: Write job summary
         shell: bash
         run: |
-          ls -1 "$ROOT_DIR/$DIR" | wc -l
+          set -euo pipefail
+
+          # Decide whether we generated or reused the cache
+          if [[ "${{ steps.generate.outcome }}" == "success" ]]; then
+            status="Generated fresh data :sparkles:"
+          else
+            status="Used cached data :package:"
+          fi
+
+          # Re-measure (post-generation, so it’s accurate)
+          files=$(find "$ROOT_DIR/$DIR" -type f | wc -l || echo 0)
+          bytes=$(du -s --block-size=1 "$ROOT_DIR/$DIR" | cut -f1 || echo 0)
+
+          echo "### Cache-benchmark summary"             >> $GITHUB_STEP_SUMMARY
+          echo ""                                        >> $GITHUB_STEP_SUMMARY
+          echo "- **Job:** \`${{ github.job }}\`"        >> $GITHUB_STEP_SUMMARY
+          echo "- **Directory:** \`$ROOT_DIR/$DIR\`"     >> $GITHUB_STEP_SUMMARY
+          echo "- **Files now:** \`$files\`"             >> $GITHUB_STEP_SUMMARY
+          echo "- **Bytes now:** \`$bytes\`"             >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** $status"                   >> $GITHUB_STEP_SUMMARY
