@@ -91,7 +91,7 @@ jobs:
         run: |
           set -euo pipefail
           for i in $(seq 1 "$SMALL_COUNT"); do
-            dd if=/dev/urandom of "$ROOT_DIR/$DIR/file_$i.bin" bs="$SMALL_SIZE_BYTES" count=1 status=none
+            dd if=/dev/urandom of="$ROOT_DIR/$DIR/file_$i.bin" bs="$SMALL_SIZE_BYTES" count=1 status=none
           done
 
       - name: Verify files
@@ -181,7 +181,7 @@ jobs:
         run: |
           set -euo pipefail
           for i in $(seq 1 "$SMALL_COUNT"); do
-            dd if=/dev/urandom of "$ROOT_DIR/$DIR/file_$i.bin" bs="$SMALL_SIZE_BYTES" count=1 status=none
+            dd if=/dev/urandom of="$ROOT_DIR/$DIR/file_$i.bin" bs="$SMALL_SIZE_BYTES" count=1 status=none
           done
 
       - name: Verify files
