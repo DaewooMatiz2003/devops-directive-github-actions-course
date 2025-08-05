@@ -67,7 +67,7 @@ jobs:
           dir="$ROOT_DIR/$DIR"
           files=$(find "$dir" -type f | wc -l || true)
           bytes=$(du -s --block-size=1 "$dir" | cut -f1 || echo 0)
-          echo "files=$count"  >> "$GITHUB_OUTPUT"
+          echo "files=$files"  >> "$GITHUB_OUTPUT"
           echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
 
   # ───────────────────────────────────────────────────────────────
