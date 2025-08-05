@@ -13,14 +13,14 @@ env:
   SALT: "v4"
 
 jobs:
-  # ─────────────────────────────────────────────────────────────────────
+  # ───────────────────────────────────────────────────────────────
   # Namespace cache – LARGE
-  # ─────────────────────────────────────────────────────────────────────
+  # ───────────────────────────────────────────────────────────────
   nscloud-cache-large:
     runs-on: namespace-profile-cache-test
     env:
       DIR: large
-    outputs:
+    outputs: # ← expose metrics for downstream job
       files: ${{ steps.check.outputs.files }}
       bytes: ${{ steps.check.outputs.bytes }}
       generated: ${{ steps.generate.outcome }}
@@ -59,29 +59,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
-          # Decide whether we generated or reused the cache
-          if [[ "${{ steps.generate.outcome }}" == "success" ]]; then
-            status="Generated fresh data :sparkles:"
-          else
-            status="Used cached data :package:"
-          fi
-
-          # Re-measure (post-generation, so it’s accurate)
+          status=$([[ "${{ steps.generate.outcome }}" == "success" ]] && echo "Generated fresh data :sparkles:" || echo "Used cached data :package:")
           files=$(find "$ROOT_DIR/$DIR" -type f | wc -l || echo 0)
           bytes=$(du -s --block-size=1 "$ROOT_DIR/$DIR" | cut -f1 || echo 0)
+          {
+            echo "### Cache-benchmark summary"
+            echo ""
+            echo "- **Job:** \`${{ github.job }}\`"
+            echo "- **Directory:** \`$ROOT_DIR/$DIR\`"
+            echo "- **Files now:** \`$files\`"
+            echo "- **Bytes now:** \`$bytes\`"
+            echo "- **Status:** $status"
+          } >> "$GITHUB_STEP_SUMMARY"
 
-          echo "### Cache-benchmark summary"             >> $GITHUB_STEP_SUMMARY
-          echo ""                                        >> $GITHUB_STEP_SUMMARY
-          echo "- **Job:** \`${{ github.job }}\`"        >> $GITHUB_STEP_SUMMARY
-          echo "- **Directory:** \`$ROOT_DIR/$DIR\`"     >> $GITHUB_STEP_SUMMARY
-          echo "- **Files now:** \`$files\`"             >> $GITHUB_STEP_SUMMARY
-          echo "- **Bytes now:** \`$bytes\`"             >> $GITHUB_STEP_SUMMARY
-          echo "- **Status:** $status"                   >> $GITHUB_STEP_SUMMARY
-
-  # ─────────────────────────────────────────────────────────────────────
+  # ───────────────────────────────────────────────────────────────
   # Namespace cache – MANY
-  # ─────────────────────────────────────────────────────────────────────
+  # ───────────────────────────────────────────────────────────────
   nscloud-cache-many:
     runs-on: namespace-profile-cache-test
     env:
@@ -123,38 +116,26 @@ jobs:
             dd if=/dev/urandom of="$ROOT_DIR/$DIR/file_$i.bin" bs="$SMALL_SIZE_BYTES" count=1 status=none
           done
 
-      - name: Verify files
-        shell: bash
-        run: |
-          ls -1 "$ROOT_DIR/$DIR" | wc -l
-
       - name: Write job summary
         shell: bash
         run: |
           set -euo pipefail
-
-          # Decide whether we generated or reused the cache
-          if [[ "${{ steps.generate.outcome }}" == "success" ]]; then
-            status="Generated fresh data :sparkles:"
-          else
-            status="Used cached data :package:"
-          fi
-
-          # Re-measure (post-generation, so it’s accurate)
+          status=$([[ "${{ steps.generate.outcome }}" == "success" ]] && echo "Generated fresh data :sparkles:" || echo "Used cached data :package:")
           files=$(find "$ROOT_DIR/$DIR" -type f | wc -l || echo 0)
           bytes=$(du -s --block-size=1 "$ROOT_DIR/$DIR" | cut -f1 || echo 0)
+          {
+            echo "### Cache-benchmark summary"
+            echo ""
+            echo "- **Job:** \`${{ github.job }}\`"
+            echo "- **Directory:** \`$ROOT_DIR/$DIR\`"
+            echo "- **Files now:** \`$files\`"
+            echo "- **Bytes now:** \`$bytes\`"
+            echo "- **Status:** $status"
+          } >> "$GITHUB_STEP_SUMMARY"
 
-          echo "### Cache-benchmark summary"             >> $GITHUB_STEP_SUMMARY
-          echo ""                                        >> $GITHUB_STEP_SUMMARY
-          echo "- **Job:** \`${{ github.job }}\`"        >> $GITHUB_STEP_SUMMARY
-          echo "- **Directory:** \`$ROOT_DIR/$DIR\`"     >> $GITHUB_STEP_SUMMARY
-          echo "- **Files now:** \`$files\`"             >> $GITHUB_STEP_SUMMARY
-          echo "- **Bytes now:** \`$bytes\`"             >> $GITHUB_STEP_SUMMARY
-          echo "- **Status:** $status"                   >> $GITHUB_STEP_SUMMARY
-
-  # ─────────────────────────────────────────────────────────────────────
+  # ───────────────────────────────────────────────────────────────
   # GitHub Actions cache – LARGE
-  # ─────────────────────────────────────────────────────────────────────
+  # ───────────────────────────────────────────────────────────────
   actions-cache-large:
     runs-on: ubuntu-latest
     env:
@@ -200,29 +181,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
-          # Decide whether we generated or reused the cache
-          if [[ "${{ steps.generate.outcome }}" == "success" ]]; then
-            status="Generated fresh data :sparkles:"
-          else
-            status="Used cached data :package:"
-          fi
-
-          # Re-measure (post-generation, so it’s accurate)
+          status=$([[ "${{ steps.generate.outcome }}" == "success" ]] && echo "Generated fresh data :sparkles:" || echo "Used cached data :package:")
           files=$(find "$ROOT_DIR/$DIR" -type f | wc -l || echo 0)
           bytes=$(du -s --block-size=1 "$ROOT_DIR/$DIR" | cut -f1 || echo 0)
+          {
+            echo "### Cache-benchmark summary"
+            echo ""
+            echo "- **Job:** \`${{ github.job }}\`"
+            echo "- **Directory:** \`$ROOT_DIR/$DIR\`"
+            echo "- **Files now:** \`$files\`"
+            echo "- **Bytes now:** \`$bytes\`"
+            echo "- **Status:** $status"
+          } >> "$GITHUB_STEP_SUMMARY"
 
-          echo "### Cache-benchmark summary"             >> $GITHUB_STEP_SUMMARY
-          echo ""                                        >> $GITHUB_STEP_SUMMARY
-          echo "- **Job:** \`${{ github.job }}\`"        >> $GITHUB_STEP_SUMMARY
-          echo "- **Directory:** \`$ROOT_DIR/$DIR\`"     >> $GITHUB_STEP_SUMMARY
-          echo "- **Files now:** \`$files\`"             >> $GITHUB_STEP_SUMMARY
-          echo "- **Bytes now:** \`$bytes\`"             >> $GITHUB_STEP_SUMMARY
-          echo "- **Status:** $status"                   >> $GITHUB_STEP_SUMMARY
-
-  # ─────────────────────────────────────────────────────────────────────
+  # ───────────────────────────────────────────────────────────────
   # GitHub Actions cache – MANY
-  # ─────────────────────────────────────────────────────────────────────
+  # ───────────────────────────────────────────────────────────────
   actions-cache-many:
     runs-on: ubuntu-latest
     env:
@@ -258,7 +232,7 @@ jobs:
 
       - name: Generate many small files (ACTIONS)
         id: generate
-        if: ${{ steps.check.outputs.files == '0' }}
+        if: ${{ steps.check.outputs.files != env.SMALL_COUNT }}
         shell: bash
         run: |
           set -euo pipefail
@@ -270,26 +244,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
-          # Decide whether we generated or reused the cache
-          if [[ "${{ steps.generate.outcome }}" == "success" ]]; then
-            status="Generated fresh data :sparkles:"
-          else
-            status="Used cached data :package:"
-          fi
-
-          # Re-measure (post-generation, so it’s accurate)
+          status=$([[ "${{ steps.generate.outcome }}" == "success" ]] && echo "Generated fresh data :sparkles:" || echo "Used cached data :package:")
           files=$(find "$ROOT_DIR/$DIR" -type f | wc -l || echo 0)
           bytes=$(du -s --block-size=1 "$ROOT_DIR/$DIR" | cut -f1 || echo 0)
+          {
+            echo "### Cache-benchmark summary"
+            echo ""
+            echo "- **Job:** \`${{ github.job }}\`"
+            echo "- **Directory:** \`$ROOT_DIR/$DIR\`"
+            echo "- **Files now:** \`$files\`"
+            echo "- **Bytes now:** \`$bytes\`"
+            echo "- **Status:** $status"
+          } >> "$GITHUB_STEP_SUMMARY"
 
-          echo "### Cache-benchmark summary"             >> $GITHUB_STEP_SUMMARY
-          echo ""                                        >> $GITHUB_STEP_SUMMARY
-          echo "- **Job:** \`${{ github.job }}\`"        >> $GITHUB_STEP_SUMMARY
-          echo "- **Directory:** \`$ROOT_DIR/$DIR\`"     >> $GITHUB_STEP_SUMMARY
-          echo "- **Files now:** \`$files\`"             >> $GITHUB_STEP_SUMMARY
-          echo "- **Bytes now:** \`$bytes\`"             >> $GITHUB_STEP_SUMMARY
-          echo "- **Status:** $status"                   >> $GITHUB_STEP_SUMMARY
-
+  # ───────────────────────────────────────────────────────────────
+  # Aggregate summary
+  # ───────────────────────────────────────────────────────────────
   aggregate-summary:
     name: Consolidated cache report
     runs-on: ubuntu-latest
@@ -298,17 +268,17 @@ jobs:
       - nscloud-cache-many
       - actions-cache-large
       - actions-cache-many
-
     steps:
       - name: Publish overall summary
         shell: bash
         run: |
-          echo "## Cache Benchmark – overall report" >> $GITHUB_STEP_SUMMARY
-          echo ""                                     >> $GITHUB_STEP_SUMMARY
-          echo "| Job | Files | Bytes | Generated? |" >> $GITHUB_STEP_SUMMARY
-          echo "| --- | ----: | ----: | --------- |"  >> $GITHUB_STEP_SUMMARY
-
-          echo "| nscloud-cache-large | ${{ needs.nscloud-cache-large.outputs.files }} | ${{ needs.nscloud-cache-large.outputs.bytes }} | ${{ needs.nscloud-cache-large.outputs.generated }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| nscloud-cache-many  | ${{ needs.nscloud-cache-many.outputs.files }}  | ${{ needs.nscloud-cache-many.outputs.bytes }}  | ${{ needs.nscloud-cache-many.outputs.generated }}  |" >> $GITHUB_STEP_SUMMARY
-          echo "| actions-cache-large | ${{ needs.actions-cache-large.outputs.files }} | ${{ needs.actions-cache-large.outputs.bytes }} | ${{ needs.actions-cache-large.outputs.generated }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| actions-cache-many  | ${{ needs.actions-cache-many.outputs.files }}  | ${{ needs.actions-cache-many.outputs.bytes }}  | ${{ needs.actions-cache-many.outputs.generated }}  |" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## Cache Benchmark – consolidated report"
+            echo ""
+            echo "| Job | Files | Bytes | Generated? |"
+            echo "| --- | ----: | ----: | --------- |"
+            echo "| nscloud-cache-large | ${{ needs.nscloud-cache-large.outputs.files }} | ${{ needs.nscloud-cache-large.outputs.bytes }} | ${{ needs.nscloud-cache-large.outputs.generated }} |"
+            echo "| nscloud-cache-many  | ${{ needs.nscloud-cache-many.outputs.files }}  | ${{ needs.nscloud-cache-many.outputs.bytes }}  | ${{ needs.nscloud-cache-many.outputs.generated }}  |"
+            echo "| actions-cache-large | ${{ needs.actions-cache-large.outputs.files }} | ${{ needs.actions-cache-large.outputs.bytes }} | ${{ needs.actions-cache-large.outputs.generated }} |"
+            echo "| actions-cache-many  | ${{ needs.actions-cache-many.outputs.files }}  | ${{ needs.actions-cache-many.outputs.bytes }}  | ${{ needs.actions-cache-many.outputs.generated }}  |"
+          } >> "$GITHUB_STEP_SUMMARY"
