@@ -7,10 +7,10 @@ on:
 
 env:
   ROOT_DIR: bench
-  LARGE_SIZE_MB: "512"
-  SMALL_COUNT: "10000"
+  LARGE_SIZE_MB: "2048"
+  SMALL_COUNT: "100000"
   SMALL_SIZE_BYTES: "4096"
-  SALT: "v3"
+  SALT: "v4"
 
 jobs:
   # ─────────────────────────────────────────────────────────────────────
