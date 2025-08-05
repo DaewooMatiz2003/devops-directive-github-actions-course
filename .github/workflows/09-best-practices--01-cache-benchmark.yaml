@@ -1,9 +1,9 @@
-name: Cache Benchmark
+name: Namespace Cache Volumes Benchmark
 
 on:
-  push:
-    branches: [sp/cache-benchmark]
   workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *" # Daily at midnight UTC
 
 env:
   ROOT_DIR: bench
