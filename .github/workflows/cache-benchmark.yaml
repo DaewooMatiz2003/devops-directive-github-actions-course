@@ -42,9 +42,9 @@ jobs:
         run: |
           set -euo pipefail
           dir="$ROOT_DIR/$DIR"
-          count=$(find "$dir" -type f | wc -l || true)
+          files=$(find "$dir" -type f | wc -l || true)
           bytes=$(du -s --block-size=1 "$dir" | cut -f1 || echo 0)
-          echo "files=$count"  >> "$GITHUB_OUTPUT"
+          echo "files=$files"  >> "$GITHUB_OUTPUT"
           echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
           echo "::group::First 20 entries in $dir"
           ls -lh "$dir" | head -20 || true
@@ -65,7 +65,7 @@ jobs:
         run: |
           set -euo pipefail
           dir="$ROOT_DIR/$DIR"
-          count=$(find "$dir" -type f | wc -l || true)
+          files=$(find "$dir" -type f | wc -l || true)
           bytes=$(du -s --block-size=1 "$dir" | cut -f1 || echo 0)
           echo "files=$count"  >> "$GITHUB_OUTPUT"
           echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
@@ -99,9 +99,9 @@ jobs:
         run: |
           set -euo pipefail
           dir="$ROOT_DIR/$DIR"
-          count=$(find "$dir" -type f | wc -l || true)
+          files=$(find "$dir" -type f | wc -l || true)
           bytes=$(du -s --block-size=1 "$dir" | cut -f1 || echo 0)
-          echo "files=$count"  >> "$GITHUB_OUTPUT"
+          echo "files=$files"  >> "$GITHUB_OUTPUT"
           echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
           echo "::group::First 20 entries in $dir"
           ls -lh "$dir" | head -20 || true
@@ -124,9 +124,9 @@ jobs:
         run: |
           set -euo pipefail
           dir="$ROOT_DIR/$DIR"
-          count=$(find "$dir" -type f | wc -l || true)
+          files=$(find "$dir" -type f | wc -l || true)
           bytes=$(du -s --block-size=1 "$dir" | cut -f1 || echo 0)
-          echo "files=$count"  >> "$GITHUB_OUTPUT"
+          echo "files=$files"  >> "$GITHUB_OUTPUT"
           echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
 
   # ───────────────────────────────────────────────────────────────
@@ -160,9 +160,9 @@ jobs:
         run: |
           set -euo pipefail
           dir="$ROOT_DIR/$DIR"
-          count=$(find "$dir" -type f | wc -l || true)
+          files=$(find "$dir" -type f | wc -l || true)
           bytes=$(du -s --block-size=1 "$dir" | cut -f1 || echo 0)
-          echo "files=$count"  >> "$GITHUB_OUTPUT"
+          echo "files=$files"  >> "$GITHUB_OUTPUT"
           echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
           echo "::group::First 20 entries in $dir"
           ls -lh "$dir" | head -20 || true
@@ -208,9 +208,9 @@ jobs:
         run: |
           set -euo pipefail
           dir="$ROOT_DIR/$DIR"
-          count=$(find "$dir" -type f | wc -l || true)
+          files=$(find "$dir" -type f | wc -l || true)
           bytes=$(du -s --block-size=1 "$dir" | cut -f1 || echo 0)
-          echo "files=$count"  >> "$GITHUB_OUTPUT"
+          echo "files=$files"  >> "$GITHUB_OUTPUT"
           echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
           echo "::group::First 20 entries in $dir"
           ls -lh "$dir" | head -20 || true
