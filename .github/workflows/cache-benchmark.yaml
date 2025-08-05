@@ -46,10 +46,14 @@ jobs:
           bytes=$(du -s --block-size=1 "$dir" | cut -f1 || echo 0)
           echo "files=$count"  >> "$GITHUB_OUTPUT"
           echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
+          echo "::group::First 20 entries in $dir"
+          ls -lh "$dir" | head -20 || true
+          echo "::endgroup::"
+          echo "Check results: $files file(s), $bytes bytes"
 
       - name: Generate large file (NSCLOUD)
         id: generate
-        if: ${{ steps.check.outputs.files == '0' }}
+        if: ${{ steps.check-before.outputs.files == '0' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -99,10 +103,14 @@ jobs:
           bytes=$(du -s --block-size=1 "$dir" | cut -f1 || echo 0)
           echo "files=$count"  >> "$GITHUB_OUTPUT"
           echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
+          echo "::group::First 20 entries in $dir"
+          ls -lh "$dir" | head -20 || true
+          echo "::endgroup::"
+          echo "Check results: $files file(s), $bytes bytes"
 
       - name: Generate many small files (NSCLOUD)
         id: generate
-        if: ${{ steps.check.outputs.files != env.SMALL_COUNT }}
+        if: ${{ steps.check-before.outputs.files != env.SMALL_COUNT }}
         shell: bash
         run: |
           set -euo pipefail
@@ -156,6 +164,10 @@ jobs:
           bytes=$(du -s --block-size=1 "$dir" | cut -f1 || echo 0)
           echo "files=$count"  >> "$GITHUB_OUTPUT"
           echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
+          echo "::group::First 20 entries in $dir"
+          ls -lh "$dir" | head -20 || true
+          echo "::endgroup::"
+          echo "Check results: $files file(s), $bytes bytes"
 
       - name: Generate large file (ACTIONS)
         id: generate
@@ -200,6 +212,10 @@ jobs:
           bytes=$(du -s --block-size=1 "$dir" | cut -f1 || echo 0)
           echo "files=$count"  >> "$GITHUB_OUTPUT"
           echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
+          echo "::group::First 20 entries in $dir"
+          ls -lh "$dir" | head -20 || true
+          echo "::endgroup::"
+          echo "Check results: $files file(s), $bytes bytes"
 
       - name: Generate many small files (ACTIONS)
         id: generate
