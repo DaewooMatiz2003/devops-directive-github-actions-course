@@ -131,7 +131,7 @@ jobs:
   # GitHub Actions cache – LARGE
   # ───────────────────────────────────────────────────────────────
   actions-cache-large:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       DIR: large
     outputs:
@@ -179,7 +179,7 @@ jobs:
   # GitHub Actions cache – MANY
   # ───────────────────────────────────────────────────────────────
   actions-cache-many:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       DIR: many
     outputs:
@@ -230,7 +230,7 @@ jobs:
   # ───────────────────────────────────────────────────────────────
   aggregate-summary:
     name: Consolidated cache report
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - nscloud-cache-large
       - nscloud-cache-many
