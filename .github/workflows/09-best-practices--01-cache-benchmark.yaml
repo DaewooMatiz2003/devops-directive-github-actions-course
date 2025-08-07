@@ -16,7 +16,7 @@ jobs:
   # ───────────────────────────────────────────────────────────────
   nscloud-cache-large:
     runs-on:
-      - nscloud-ubuntu-24.04-arm64-4x16-with-cache
+      - nscloud-ubuntu-24.04-amd64-4x16-with-cache
       - nscloud-cache-tag-large-file
       - nscloud-cache-size-20gb
     env:
@@ -76,7 +76,7 @@ jobs:
   # ───────────────────────────────────────────────────────────────
   nscloud-cache-many:
     runs-on:
-      - nscloud-ubuntu-24.04-arm64-4x16-with-cache
+      - nscloud-ubuntu-24.04-amd64-4x16-with-cache
       - nscloud-cache-tag-many-files
       - nscloud-cache-size-20gb
     env:
