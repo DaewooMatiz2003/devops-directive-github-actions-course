@@ -2,8 +2,6 @@ name: Namespace Cache Volumes Benchmark
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "*/5 * * * *" # Every 5 minutes
 
 env:
   ROOT_DIR: bench
@@ -17,7 +15,7 @@ jobs:
   # Namespace cache – LARGE
   # ───────────────────────────────────────────────────────────────
   nscloud-cache-large:
-    runs-on: namespace-profile-cache-test
+    runs-on: namespace-profile-cache-test-large-file
     env:
       DIR: large
     outputs: # ← expose metrics for downstream job
@@ -74,7 +72,7 @@ jobs:
   # Namespace cache – MANY
   # ───────────────────────────────────────────────────────────────
   nscloud-cache-many:
-    runs-on: namespace-profile-cache-test
+    runs-on: namespace-profile-cache-test-many-files
     env:
       DIR: many
     outputs:
