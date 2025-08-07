@@ -15,7 +15,10 @@ jobs:
   # Namespace cache – LARGE
   # ───────────────────────────────────────────────────────────────
   nscloud-cache-large:
-    runs-on: namespace-profile-cache-test-large-file
+    runs-on:
+      - nscloud-ubuntu-24.04-arm64-4x16-with-cache
+      - nscloud-cache-tag-large-file
+      - nscloud-cache-size-20gb
     env:
       DIR: large
     outputs: # ← expose metrics for downstream job
@@ -72,7 +75,10 @@ jobs:
   # Namespace cache – MANY
   # ───────────────────────────────────────────────────────────────
   nscloud-cache-many:
-    runs-on: namespace-profile-cache-test-many-files
+    runs-on:
+      - nscloud-ubuntu-24.04-arm64-4x16-with-cache
+      - nscloud-cache-tag-many-files
+      - nscloud-cache-size-20gb
     env:
       DIR: many
     outputs:
