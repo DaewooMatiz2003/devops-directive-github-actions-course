@@ -38,7 +38,7 @@ jobs:
             } | jq -s -c .
           )
 
-          # Output just the array for `matrix.include`
+          # Output the array for `matrix.include`
           echo "include=$include_json" >> "$GITHUB_OUTPUT"
 
   execute:
