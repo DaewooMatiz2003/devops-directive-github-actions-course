@@ -18,7 +18,8 @@
     "go@1.19",
     "poetry@latest",
     "nodejs_20@latest",
-    "namespace-cli@latest"
+    "namespace-cli@latest",
+    "gnused@latest"
   ],
   "shell": {
     "init_hook": [

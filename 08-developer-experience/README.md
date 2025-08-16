@@ -58,3 +58,13 @@ act workflow_dispatch \
   -W '../.github/workflows/03-core-features--01-hello-world.yaml'
 ```
 
+### 3. Set up breakpoints
+
+Out of the box, the default GitHub hosted runners do not have a way to connect to the runner directly.
+
+There are a few 3rd party solutions which can enable this type of behavior:
+
+- [If using GitHub Hosted Runnerss)](https://github.com/mxschmitt/action-tmate)
+- [If using https://namespace.so/](https://namespace.so/docs/reference/github-actions/breakpoint)
+- [If using https://actuated.com/](https://github.com/self-actuated/connect-ssh)
+- [If using http://blacksmith.sh/](https://docs.blacksmith.sh/blacksmith-observability/ssh-access)
