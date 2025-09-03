@@ -17,7 +17,7 @@ jobs:
       - name: Get the output time
         run: echo "The time was ${{ steps.hello.outputs.time }}"
 
-  typescript-with-build:
+  javascript-with-build:
     runs-on: ubuntu-latest
     name: Javascript action (with build)
     steps:
