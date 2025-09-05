@@ -1,4 +1,4 @@
-name: Workflow Iteration (Breakpoint with SSH)
+name: Workflow Iteration (Debug Env Vars)
 
 on:
   workflow_dispatch:
