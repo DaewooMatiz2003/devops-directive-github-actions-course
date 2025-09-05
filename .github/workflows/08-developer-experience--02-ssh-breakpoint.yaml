@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Fail
         run: |
-          echo "Hello from an inline bash script in a GitHub Action Workflow!"
+          echo "::error Purposefully failing the job"; exit 1;
       - name: Breakpoint if failed
         if: failure()
         uses: namespacelabs/breakpoint-action@664d004eae0e89e248fafe14fd5e97d28440a85e # v0.0.13
