@@ -1,0 +1,18 @@
+name: Workflow Iteration (Breakpoint with SSH)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fail-with-breakpoint:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail
+        run: |
+          echo "Hello from an inline bash script in a GitHub Action Workflow!"
+      - name: Breakpoint if failed
+        if: failure()
+        uses: namespacelabs/breakpoint-action@664d004eae0e89e248fafe14fd5e97d28440a85e # v0.0.13
+        with:
+          duration: 10m
+          authorized-users: sidpalas
