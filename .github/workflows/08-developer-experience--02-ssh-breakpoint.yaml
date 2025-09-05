@@ -7,6 +7,8 @@ jobs:
   fail-with-breakpoint:
     runs-on: ubuntu-24.04
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v5.0.0
       - name: Fail
         run: |
           echo "::error Purposefully failing the job"; exit 1;
