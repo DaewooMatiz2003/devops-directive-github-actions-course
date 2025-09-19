@@ -1,6 +1,6 @@
 # 01. History and Motivation
 
-Continuous Integration (CI) has dramatically transformed the way we build, test, and deliver software. What once took weeks or months is now handled in minutes — all thanks to decades of innovation in tooling and process.
+Continuous Integration (CI) has dramatically transformed the way we build, test, and deliver software. What once took weeks or months is now handled in minutes, thanks to decades of innovation in tooling and process.
 
 ## Speed of Software Delivery over Time
 
