@@ -1,8 +1,8 @@
 # DevOps Directive GitHub Actions Course
 
-This is the companion repo to: [TODO: Add YouTube Video Link]()
+This is the companion repo to: [GitHub Actions: Beginner to Pro](https://courses.devopsdirective.com/github-actions-beginner-to-pro)
 
-[TODO: Add Thumbnail]()
+![](./readme-assets/thumbnail-yt.png)]
 
 ## 🙌 Sponsored by Namespace Labs
 
