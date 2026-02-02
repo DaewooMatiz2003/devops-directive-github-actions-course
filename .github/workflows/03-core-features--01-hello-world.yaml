@@ -6,6 +6,6 @@ on:
 
 jobs:
   say-hello-inline-bash:
-  runs-on: ubuntu-latest
-  steps:
-    - run: echo "Hello from an inline bash command in GitHub Actions Workflow!"
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Hello from an inline bash command in GitHub Actions Workflow!"
