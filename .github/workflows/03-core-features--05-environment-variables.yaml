@@ -34,4 +34,4 @@ jobs:
         run: |
           echo "WORKFLOW_VAR: $WORKFLOW_VAR"
           echo "JOB_VAR:      ${JOB_VAR:-<UNSET>}"   # not set here
-          echo "STEP_VAR:     ${STEP_VAR::-<UNSET>}" # not set here
+          echo "STEP_VAR:     ${STEP_VAR:-<UNSET>}" # not set here
