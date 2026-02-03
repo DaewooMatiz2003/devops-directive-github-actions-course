@@ -1,0 +1,37 @@
+---
+name: 03-05 Environment Variables
+
+on:
+  workflow_dispatch:
+
+env:
+  WORKFLOW_VAR: I_AM_WORKFLOW_SCOPED
+
+jobs:
+  job-01:
+    runs-on: ubuntu-24.04
+    env:
+      JOB_VAR: I_AM_JOB_01_SCOPED
+    steps:
+      - name: Inspect scope job 01 step 1
+        env:
+          STEP_VAR: I_AM_STEP_SCOPED
+        run: |
+          echo "WORKFLOW_VAR: $WORKFLOW_VAR"
+          echo "JOB_VAR:      $JOB_VAR"
+          echo "STEP_VAR:     $STEP_VAR"
+
+      - name: Inspect scope job 01 step 2
+        run: |
+          echo "WORKFLOW_VAR: $WORKFLOW_VAR"
+          echo "JOB_VAR:      $JOB_VAR"
+          echo "STEP_VAR:     ${STEP_VAR:-<UNSET>}" # not set here
+
+  job-02:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Inspect scope job 02 step 1
+        run: |
+          echo "WORKFLOW_VAR: $WORKFLOW_VAR"
+          echo "JOB_VAR:      ${JOB_VAR:-<UNSET>}"   # not set here
+          echo "STEP_VAR:     ${STEP_VAR::-<UNSET>}" # not set here
