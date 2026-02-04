@@ -33,3 +33,24 @@ jobs:
         run: |
           echo "cache-hit? -> ${{ steps.demo-cache.outputs.cache-hit }}"
           cat demo-cache/timestamp.txt
+
+  node-cache:
+    name: npm depende cache (setup-node)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: 04-advanced-features/caching/minimal-node-project
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: 04-advanced-features/caching/minimal-node-project/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: List first few node modules
+        run: ls -R node_modules | head
