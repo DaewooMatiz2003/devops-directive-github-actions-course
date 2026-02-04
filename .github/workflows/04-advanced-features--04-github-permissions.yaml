@@ -1,0 +1,45 @@
+---
+name: 04-04 GitHub Permissions
+on:
+  workflow_dispatch:
+
+jobs:
+  read-only-pr:
+    runs-on: ubuntu-24.04
+    permissions:
+      pull-requests: read
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: List the first 5 open PRs (allowed)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr list --limit 5
+
+      - name: Attempt to add a label (expected to fail)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: 3
+        run: gh pr edit $PR_NUMBER --add-label "documentation"
+
+      - name: Confirm the failure
+        if: failure()
+        run: echo "ERROR - write operation was blocked as expected - token is read-only"
+
+  read-write-pr:
+    runs-on: ubuntu-24.04
+    permissions: 
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Attempt to add a label (expected to succeed)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: 3
+        run: gh pr edit $PR_NUMBER --add-label "documentation"
+
+      - name: Confirm the success
+        if: success()
+        run: echo "OK - write operation succeeded!"
