@@ -38,6 +38,10 @@ jobs:
           echo "::add-mask::$FOO"
           echo "FOO is $FOO - added masking"
 
+      # fix for act docker images
+      - name: Install uuidgen - required for the next step
+        run: sudo apt update && sudo apt install uuid-runtime -y
+
       - name: Stop and resume workflow commands
         run: |
           marker=$(uuidgen)
@@ -55,10 +59,10 @@ jobs:
 
       - name: Append to step summary
         run: |
-          echo "### Build completed" >> $GITHUB_STEP_SUMMARY
-          # echo "- Build ID: $BUILD_ID" >> $GITHUB_STEP_SUMMARY
-          echo "- "Colour: ${{ steps.pick-colour.outputs.choice }}" >> $GITHUB_STEP_SUMMARY
-      
+          echo "### Build completed" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Build ID: $BUILD_ID" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Colour : ${{ steps.pick-colour.outputs.choice }}" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Add custom path
         run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
