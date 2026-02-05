@@ -1,0 +1,23 @@
+---
+name: 06-04 Javascript Actions
+on:
+  workflow_dispatch:
+
+jobs:
+  typescript:
+    runs-on: ubuntu-24.04
+    name: Typescript action
+    steps:
+      - name: Checkout repo with submodules
+        uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Run typescript action
+        uses: ./06-authoring-actions/javascript-actions/typescript-action-with-build
+        id: typescript-step
+        with:
+          milliseconds: 5000
+
+      - name: Get the output time
+        run: echo "The time was ${{ steps.typescript-step.time }}"
