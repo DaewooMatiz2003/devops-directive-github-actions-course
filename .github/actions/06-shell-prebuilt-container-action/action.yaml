@@ -1,0 +1,19 @@
+---
+name: 06 Hello (public image)
+description: Greet someone and expose a greeting output
+
+inputs:
+  who-to-greet:
+    description: Name to greet
+    required: true
+    default: World
+
+outputs:
+  greeting:
+    description: The greeting that was printed
+
+runs:
+  using: docker
+  image: sidpalas/shell-container-action:v0.0.1
+  env:
+    INPUT_WHO_TO_GREET: ${{ inputs.who-to-greet }}

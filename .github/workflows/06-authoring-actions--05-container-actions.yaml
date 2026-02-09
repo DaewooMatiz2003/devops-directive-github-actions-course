@@ -4,6 +4,40 @@ on:
   workflow_dispatch:
 
 jobs:
+  shell-dockerfile:
+    name: Shell Container Action (dynamic Dockerfile build)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Run container action
+        uses: ./06-authoring-actions/container-actions/shell-container-action
+        id: hello-from-shell
+        with:
+          who-to-greet: "from a dynamic shell container"
+
+      - name: Get the output greeting
+        run: echo "The greeting was ${{ steps.hello-from-shell.outputs.greeting }}"
+
+  shell-public-container-image:
+    name: Shell Container Action (public container image)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Run container action
+        uses: ./.github/actions/06-shell-prebuilt-container-action
+        id: hello-from-shell
+        with:
+          who-to-greet: "from a public image shell container"
+
+      - name: Get the output greeting
+        run: echo "The greeting was ${{ steps.hello-from-shell.outputs.greeting }}"
+
   python-dockerfile:
     name: Python Container Action (dynamic Dockerfile build)
     runs-on: ubuntu-latest
