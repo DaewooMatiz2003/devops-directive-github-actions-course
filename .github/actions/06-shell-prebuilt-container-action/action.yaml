@@ -14,6 +14,6 @@ outputs:
 
 runs:
   using: docker
-  image: sidpalas/shell-container-action:v0.0.1
+  image: docker://sidpalas/shell-container-action:v0.0.1
   env:
     INPUT_WHO_TO_GREET: ${{ inputs.who-to-greet }}
