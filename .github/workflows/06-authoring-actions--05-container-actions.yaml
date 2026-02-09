@@ -1,0 +1,21 @@
+---
+name: 06-05 Container Action Caller
+on:
+  workflow_dispatch:
+
+jobs:
+  python-dockerfile:
+    name: Python Container Action (dynamic Dockerfile build)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Run container action
+        uses: ./.github/actions/06-python-container-action
+        id: hello-from-python
+        with:
+          who-to-greet: "from a Python container"
+
+      - name: Get the output time
+        run: echo "The time was ${{ steps.hello-from-python.outputs.greeting }}"
