@@ -1,0 +1,22 @@
+---
+name: 08-02 Workflow Iteration (Breakpoint with SSH)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fail-with-breakpoint:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Fail
+        run: echo "::error Purposefully failing the job"; exit 1;
+
+      - name: Breakpoint if Failed
+        if: failure()
+        uses: namespacelabs/breakpoint-action@v0.0.13
+        with:
+          duration: 10m
+          authorized-users: DaewooMatiz2003
