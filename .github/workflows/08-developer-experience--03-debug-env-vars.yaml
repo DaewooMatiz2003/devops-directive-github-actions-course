@@ -1,0 +1,15 @@
+---
+name: 08-03 Workflow Iteration (Debug Env Vars)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  log-at-various-levels:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Echo some things
+        run: |
+          echo "::info::This is a info message"
+          echo "::debug::This is a debug message"
+          echo "::warning::This is a warning message"
