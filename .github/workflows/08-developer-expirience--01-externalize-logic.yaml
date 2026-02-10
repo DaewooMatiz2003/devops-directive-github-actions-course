@@ -1,0 +1,31 @@
+---
+name: 08-01 Workflow Iteration (Externalize Logic)
+
+on:
+  workflow_dispatch: 
+
+jobs:
+  say-hello-inline-bash:
+    name: Say Hello from Inline bash
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Echo Hello
+        run: echo "Hello from an inline bash script in a GitHub Action Workflow!"
+
+  say-hello-external-task:
+    name: Say Hello from external Task
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install go-task
+        uses: supplypike/setup-bin@v5
+        with:
+          uri: "https://github.com/go-task/task/releases/download/v3.48.0/task_linux_amd64.tar.gz"
+          name: task
+          version: v3.48.0
+
+      - name: Echo Hello
+        working-directory: ./08-developer-experience/workflows
+        run: task hello-world-task
